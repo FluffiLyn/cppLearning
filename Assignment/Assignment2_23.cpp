@@ -15,6 +15,7 @@ int main()
         max = c;
     else if (min > c)
         min = c;
-    printf("max=%d,min=%d", max, min);
+    
+    cout << "max=" << max << endl << "min=" << min;
     return 0;
 }
