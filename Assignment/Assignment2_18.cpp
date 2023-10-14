@@ -14,10 +14,10 @@ int main()
     cin >> num2;
 
     if (num1 > num2)
-        cout << num1 << " is greater" << endl;
+        cout << num2 << " is smaller" << endl;
     else if (num1 == num2)
         cout << "They are equal" << endl;
     else
-        cout << num2 << " is greater" << endl;
+        cout << num1 << " is smaller" << endl;
     return 0;
 }
