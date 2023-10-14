@@ -15,5 +15,6 @@ int main()
     cout << "The volume is " << 2 * pi * radius * height << endl;
     cout << "The surface area is " << 2 * pi * radius * radius 
                                     + 2 * pi * radius * height << endl;
+    system("pause");
     return 0;
 }

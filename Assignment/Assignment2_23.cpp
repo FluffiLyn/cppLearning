@@ -17,5 +17,7 @@ int main()
         min = c;
     
     cout << "max=" << max << endl << "min=" << min;
+    
+    system("pause");
     return 0;
 }

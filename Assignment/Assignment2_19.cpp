@@ -57,5 +57,6 @@ int main()
     cout << "Smallest is " << min(a,b,c) << endl;
     cout << "Largest is " << max(a,b,c) << endl;
     
+    system("pause");
     return 0;
 }

@@ -16,5 +16,7 @@ int main()
 
     sum = a + b + c;
     cout << "The sum is:" << sum ;
+    
+    system("pause");
     return 0;
 }

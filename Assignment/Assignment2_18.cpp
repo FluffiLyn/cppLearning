@@ -19,5 +19,7 @@ int main()
         cout << "They are equal" << endl;
     else
         cout << num1 << " is smaller" << endl;
+    
+    system("pause");
     return 0;
 }
