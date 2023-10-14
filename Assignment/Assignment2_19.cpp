@@ -41,7 +41,7 @@ int main()
     cout << "Input three different integers: "<< endl;
     cin >> a >> b >> c;
 
-    if (a==b || a==c )
+    if (a==b && a==c )
     {
         cout << " Please input three different integers!!!!" << endl;
         goto start;
