@@ -5,6 +5,7 @@ using namespace std;
 
 int main()
 {
-    int * p = (int *)0x1100;   //int * p = (int *)0x1100;会报错   
+    int * p = (int *)0x1100;   //引用这个野指针会报错   
+    cout << *p ;
     return 0;
 }
