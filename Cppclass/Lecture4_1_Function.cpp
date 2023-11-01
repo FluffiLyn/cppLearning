@@ -46,8 +46,8 @@ functionName(Arguments);
         static_cast<type>(data);
 
 
-//4、Function Prototype(or Declaration) 函数声明
-
+//4、Function Prototype(or Declaration) 函数原型/函数声明
+//function header = function prototype
 
 //5、Function Signature 函数签名
 //C++ 官方定义中，签名就是函数的参数部分，不包括函数的返回类型。但习惯上一般把函数返回类型和参数都作为签名的部分。

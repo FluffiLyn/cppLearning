@@ -12,7 +12,7 @@ scope   n.域
 
 (2)C++ provides five storage-class specifiers: auto, register, extern, mutable, static.
 
-## •Automatic storage class
+## •Automatic storage class 自动存储类
 
 (1)Decalred with keywords "auto" and "register"
 
@@ -26,7 +26,7 @@ scope   n.域
 
 `int max(int a, int b, int c) {     int t;     t=max(a,b);     return max(t,c); }`
 
-## •Static storage class
+## •Static storage class 静态存储类
 
 (1)Declared with keywords "extern" and "static"
 
@@ -47,6 +47,7 @@ scope   n.域
  (1)Scope is a portion of the program where an identifier can be used
 
  (2)Four scopes for an identifier:
+    
     •Function scope 函数作用域
     •File scope 文件作用域
     •Block scope 块级作用域
@@ -67,7 +68,7 @@ void f1(int x)
     b = a * x; //f1函数可以访问a,b
 }
 int c;
-void f2( intx, inty)
+void f2( int x, int y)
 {
     a = x > y ? x : y;//c的作用域从这里开始，初始值为0
     b = x < y ? x : y;//f2可以访问a,b,c
@@ -77,7 +78,7 @@ int main()//main函数可以访问a,b,c
 {
     f1(4);
     cout << "Call function f1:\n";
-    cout << "a=" << a << ",b=" << endl;
+    cout << "a=" << a << ",b=" << b << endl;
     f2(10,23);
     cout << "Call function f2:\n";
     cout << "a=" << a <<",b=" << b << ",c=" << c << endl;
@@ -163,3 +164,9 @@ Example:
 ```
 
 <font color=red face=宋体>我是红色字体</font> 
+
+# 4、变量类型
+
+1、local
+
+2、global
