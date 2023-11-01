@@ -46,6 +46,7 @@ int main()
 
     //compute e^x
     cout << "Please enter the number of x and the precision:";
+    cin >> x >> precision;
     cout << "e^" << x << "=" << setprecision(precision) << value_of_e(x, precision) << endl;
     return 0;
 
