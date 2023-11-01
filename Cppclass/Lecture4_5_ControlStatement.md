@@ -95,7 +95,7 @@ void squareByReference(const int &num)
 
 &emsp;&emsp;(b)Therefore, returning a reference to an automatic variable in a called function is a <font color=red>***Logic Error***</font>.
 
-# 3. Default Arguments 默认实参
+# 4. Default Arguments 默认实参
 &emsp;&emsp;*某些函数有这样一种形参， 在函数的很多次调用中它们都被赋予一个相同的值， 我们把这个反复出现的值称为函数的默认实参。*
 
 (1) A default value to be passed to a parameter is used when the function call ***does not specify an argument*** for that parameter.
@@ -138,7 +138,7 @@ int main()
 ```
 *Notice: Some compilers may issue an error that "too few arguments to function 'int boxVolume'.*
 
-# 4. Unary Scope Resolution operator 作用域运算符(::)
+# 5. Unary Scope Resolution operator 作用域运算符
 &emsp;&emsp;*"::" is used to access a global variable when a local variable of the ***samename*** is in scope.This cannot be used to access a local variable of the same name in an ***outer block***.*
 
 * Example
