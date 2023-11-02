@@ -4,12 +4,13 @@
 		{
 			"type": "shell",
 			"label": "C/C++: g++.exe build active file",
-			"command": "D:\\codingEnvironment\\mingw64\\bin\\g++.exe",
+			"command": "C:\\codingEnvironment\\mingw64\\bin\\g++.exe",
 			"args": [
 				"-g",
 				"${file}",
 				"-o",
-				"${fileDirname}\\${fileBasenameNoExtension}.exe"
+				"${fileDirname}\\${fileBasenameNoExtension}.exe",
+				
 			],
 			"options": {
 				"cwd": "${workspaceFolder}"
