@@ -13,7 +13,7 @@ void passgen(const char* charSet, size_t sizeofSet, int len, string current)
     for(int i = 0; i < sizeofSet; i++)
     {
         string newString = current + charSet[i];
-        passgen(charSet, sizeofSet, len - 1, newString);
+        passgen(charSet, sizeofSet, len - 1, newString);//递归
     }
 }
 
@@ -28,7 +28,7 @@ int main()
     cout << "Please enter the max length of the passwords"; 
     cin >> maxLen;
 
-    passgen(charSet.c_str(), charSet.length(), maxLen, "");
+    passgen(charSet.c_str(), charSet.length(), maxLen, "");//c_str可生成一个const char*指针
 
     return 0;
 }
