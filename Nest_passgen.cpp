@@ -25,7 +25,7 @@ int main()
     cout << "Please enter the string (e.g. abc):";
     cin >> charSet;
 
-    cout << "Please enter the max length of the passwords"; 
+    cout << "Please enter the max length of the passwords:"; 
     cin >> maxLen;
 
     passgen(charSet.c_str(), charSet.length(), maxLen, "");//c_str可生成一个const char*指针

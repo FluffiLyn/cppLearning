@@ -1,15 +1,26 @@
 #include <iostream>
-using std::cout;
-using std::endl;
+#include <cmath>
+using namespace std;
 
-int number = 7;//Global variable named "number".
+void hanoi(int n, char x, char y, char z)
+{
+    if(n == 1)
+        cout << x << "-->" << z << endl;
+    else
+    {
+        hanoi(n - 1, x, z, y);
+        cout << x << "-->" << z << endl;
+        hanoi(n - 1, y, x, z);
+    }
+}
 
 int main()
 {
-    double number = 10.5;//Local variable named number.
-
-    cout << "Local double value of number = " << number
-        << "\nGlobal int value of number = " << ::number << endl;
-
+    int m;
+    cout << "Input the number of diskes:" << endl;
+    cin >> m;
+    hanoi(m,'A','B','C');
+    cout << "steps = 2^n - 1 = " << pow(2,m) - 1;
+    
     return 0;
 }

@@ -111,7 +111,7 @@ void squareByReference(const int &num)
 #include <iostream>
 using namespace std;
 
-int boxVolume( int length, int width, int height)
+int boxVolume( int length = 1, int width = 1, int height = 1)
 {
     return length * width * height;
 }
@@ -136,9 +136,9 @@ int main()
     return 0;
 }
 ```
-*Notice: Some compilers may issue an error that "too few arguments to function 'int boxVolume'.*
 
-# 5. Unary Scope Resolution operator 作用域运算符
+
+# 5. Unary Scope Resolution operator 一元作用域解析运算符
 &emsp;&emsp;*"::" is used to access a global variable when a local variable of the ***samename*** is in scope.This cannot be used to access a local variable of the same name in an ***outer block***.*
 
 * Example
