@@ -317,4 +317,4 @@ void Circle::setX(int x)//代表setX是Circle作用域的函数
 }
 ```
 
-# 2. 对象的初始化和清理
+## 2. 对象的初始化和清理
