@@ -7,53 +7,70 @@ public:
     //构造函数
     Person()
     {
-        cout << "Person的无参构造函数调用" << endl;   
-    }
-    Person(int a)
-    {
-        age = a;
-        cout << "Person的有参构造函数调用" << endl;
-    }
-    //拷贝构造函数
-    Person( const Person &p)//必须加const，而且后面是地址传递
-    {
-        //将传入的人身上的所有属性拷贝到我身上
-        age = p.age;
-        cout << "拷贝函数调用" << endl; 
+        cout << "Person默认构造函数调用" << endl;
     }
 
-    int age;
+    Person(int age)
+    {
+        cout << "Person有参构造函数调用" << endl;
+        m_Age = age;
+    }
+
+    Person(const Person &p)
+    {
+        cout << "Person拷贝构造函数调用" << endl;
+        m_Age = p.m_Age;
+    }
+
+    ~Person()
+    {
+        cout << "Person析构函数调用" << endl;
+    }
+
+    int m_Age;
 };
 
-//调用
+//1、使用一个已经创建完毕的对象来初始化一个新对象
 void test01()
 {
-    Person p1;//默认构造函数调用(不要有括号，否则会被编译器认为是函数声明)
-    
-    //1.括号法
-    Person p2(10);//调用有参构造函数
-    Person p3(p2);//调用拷贝构造函数
-    
-    cout << "p2的年龄为：" << p2.age << endl;
-    cout << "p3的年龄为：" << p3.age << endl;//p2的age被拷贝到了p3
-    
-    //2.显示法
-    Person p11;
-    Person p22 = Person(10);//有参构造
-    Person p33 = Person(p22);//拷贝构造 
-    //注：Person(10)会创建一个匿名对象。特点：当前行执行结束后，系统会立即回收该对象
-    //并且不要用拷贝构造函数来初始化匿名对象，否则系统会报错：重定义
-    
-    //3.隐式转换法
-    Person p4 = 10;//会转换成Person p4 = Person(10)//有参构造
-    Person p5 = p4;//拷贝构造
+    Person p1(20);
+    Person p2(p1);
 
-/*以上三种方法可任选一种使用*/
+    cout << "P2的年龄为：" << p2.m_Age << endl;
 }
+
+//2、值传递的方式给函数参数传值（相当于Person p = p拷贝构造函数的隐式写法）
+void doWork(Person p)//doWork的p是doWork的局部变量，局部变量接受外部的对象时，
+{                    //使用拷贝构造来把数据复制一份给自己
+
+}                    
+
+void test02()
+{
+    Person p;
+    doWork(p);
+}
+
+//3、值方式返回局部对象
+Person doWork2()
+{
+    Person p3;
+    cout << (int*)&p3 << endl;
+    return p3;
+}
+
+void test03()
+{
+    Person p4 = doWork2();
+    cout << (int*)&p4 << endl;
+}
+
+
 int main()
 {
     test01();
-
+    test02();
+    test03();
     return 0;
 }
 

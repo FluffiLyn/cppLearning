@@ -67,15 +67,15 @@ void InsertionSort(int arr[], int len)
 {
 	for (int next = 1; next < len; next++)
 	{
-		int insert = arr[next];//Store the value in the current element
-		int moveItem = next;//Initialize location to place element
+		int insert = arr[next]; //Store the value in the current element
+		int moveItem = next;    //Initialize location to place element
 		while (moveItem > 0 && arr[moveItem - 1] > insert)
 		{
             //Shift element one slot to the right
 			arr[moveItem] = arr[moveItem - 1];
 			moveItem--;
 		}
-		arr[moveItem] = insert;//Place inserted element into the array
+		arr[moveItem] = insert; //Place inserted element into the array
 	}
 }
 ```

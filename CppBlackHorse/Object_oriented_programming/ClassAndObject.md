@@ -469,3 +469,104 @@ int main()
 }
 
 ```
+
+## 2.3 拷贝构造函数的调用时机
+当以拷贝的方式初始化对象时会调用拷贝构造函数，这里需要注意两个关键点，分别是以***拷贝的方式***和***初始化对象***。初始化对象是指，为对象分配内存后第一次向内存中填充数据，这个过程会调用构造函数，对象被创建后必须立即初始化。也就是说***只要创建对象就会调用构造函数***。
+
+三种情况：
+* 使用一个已创建完毕的对象来初始化一个新对象
+* 值传递的方式给函数参数传值
+* 以值方式返回局部对象
+
+例：
+```c++
+#include <iostream>
+using namespace std;
+
+class Person
+{
+public:
+    //构造函数
+    Person()
+    {
+        cout << "Person默认构造函数调用" << endl;
+    }
+
+    Person(int age)
+    {
+        cout << "Person有参构造函数调用" << endl;
+        m_Age = age;
+    }
+
+    Person(const Person &p)
+    {
+        cout << "Person拷贝构造函数调用" << endl;
+        m_Age = p.m_Age;
+    }
+
+    ~Person()
+    {
+        cout << "Person析构函数调用" << endl;
+    }
+
+    int m_Age;
+};
+
+//1、使用一个已经创建完毕的对象来初始化一个新对象
+void test01()
+{
+    Person p1(20);
+    Person p2(p1);
+
+    cout << "P2的年龄为：" << p2.m_Age << endl;
+}
+
+//2、值传递的方式给函数参数传值（相当于Person p = p拷贝构造函数的隐式写法）
+void doWork(Person p)//doWork的p是doWork的局部变量，局部变量接受外部的对象时，
+{                    //使用拷贝构造来把数据复制一份给自己
+
+}                    
+
+void test02()
+{
+    Person p;
+    doWork(p);
+}
+
+//3、值方式返回局部对象
+Person doWork2()
+{
+    Person p3;
+    cout << (int*)&p3 << endl;
+    return p3;
+}
+
+void test03()
+{
+    Person p4 = doWork2();
+    cout << (int*)&p4 << endl;
+}
+
+int main()
+{
+    test01();
+    test02();
+    test03();
+    return 0;
+}
+```
+
+## 2.4 构造函数调用规则
+默认情况下，c++编译器至少给一个类添加3个函数
+* 默认构造函数（无参，函数体为空）
+* 默认析构函数（无参，函数体为空）
+* 默认拷贝构造函数，对属性进行值拷贝 
+
+调用规则如下：
+* 如果用户有定义有参构造函数，c++不会再提供默认无参构造，但是会提供默认拷贝构造
+* 如果用户自定义拷贝构造函数，c++不会再提供其他构造函数
+
+不放例子了，之前有提过。
+
+## 2.5 深拷贝和潜拷贝
+<font color=red>***面试经典问题之一***</font>
