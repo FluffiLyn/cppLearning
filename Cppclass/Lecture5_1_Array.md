@@ -30,3 +30,5 @@ cout << arr[0];//output 1
 
 ## Specifying an array's size with a constant variable
 read-only.
+
+## Setting array elements of an array
