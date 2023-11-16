@@ -154,8 +154,8 @@ return 0;
 
 (2)Parameter names appearing in a function prototype are ignored by the compiler.
 
-    •Identifiers used in a f~ p~ can be**reused** elsewhere in the program without ambiguity.
-    •However, in a single prototype, a particular identifier can be used only once.
+* Identifiers used in a f~ p~ can be**reused** elsewhere in the program without ambiguity.
+* However, in a single prototype, a particular identifier can be used only once.
 
 Example:
 
