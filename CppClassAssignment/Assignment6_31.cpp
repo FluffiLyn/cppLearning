@@ -21,7 +21,7 @@ int main()
     return 0;
 }
 //Actually this is brute force. A better way to find the LCM is to find GCD first, then LCM = (a * b) / GCD.
-//Here is a function that uses division algorithm（辗转相除法）to find GCD.
+//Here is a function that uses Euclidean algorithm（辗转相除法）to find GCD.
 
 /*
 int gcd(int a, int b)
