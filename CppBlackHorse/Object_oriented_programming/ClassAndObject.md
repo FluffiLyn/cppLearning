@@ -570,3 +570,19 @@ int main()
 
 ## 2.5 深拷贝和潜拷贝
 <font color=red>***面试经典问题之一***</font>
+
+浅拷贝：简单的赋值拷贝操作
+
+深拷贝：在堆区中重新申请空间，进行拷贝操作
+
+例：
+```c++
+//沿用上一节的类
+public:
+    Person(int age, int height)
+    {
+        m_Age = age;
+        new int(height);
+        cout << "Person的有参构造函数调用" << endl;
+    }
+```
