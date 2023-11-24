@@ -51,3 +51,76 @@ vPtr += 2;// vPtr points to v[2]; Sets vPtr to 3008 = 3000 + 4 * 2
 ```
 
 ## 2. Pointer assignment
+* Pointer can be assigned to another pointer if both are of the same type
+* If not, ***cast operator*** must be used
+* ***Exception***: Pointer to void (void *)
+    * Generic pointer, represents any type
+    * **NO** casting needed to convert pointer to void *, but is needed to convert void * to ***any other type***
+    * void pointers ***cannot*** be dereferenced
+
+## 3. Pointer comparison
+* Use equality and relational operators
+* Compare ***addresses*** stored in pointers
+    * Comparisons are meaningless unless pointers point to members of the same ***array***
+* Commonly used to determine whether pointer is ***Null pointer***
+
+# 03 Arrays and Pointers
+
+## 1. Arrays and pointers are closely related
+* ***Array name*** is equivalent to a ***constant pointer***
+* Pointers can do array subscripting operations
+
+## 2. Accessing array elements with pointers
+```c++
+int b[5];
+int *bPtr;
+bPtr = b;
+```
+* Element b[n] can be accessed by *(bPtr + n)
+    * This is called pointer/offset notation
+* &b[3] is the same as (bPtr + 3)
+* b[3] is the same as *(b + 3)
+* Pointers can be subscripted
+    * bPtr[3] is the same as b[3]
+
+## 3. Accessing array elements with pointers
+```c++
+int a[10];
+```
+
+* a + i is equivalent to & a[i]
+* a[i] is equivalent to *(a + i)
+
+Example: 
+```c++
+#include <iostream>
+using namespace std;
+
+int main()
+{
+    int b[] = {10, 20, 30, 40};
+    int *bPtr = b;
+
+    cout << "Array b printed with:\n\nArray subscript notation: " << endl;
+
+    for (int i = 0; i < 4; i++)
+    {
+        cout << "b[]" << i << "] = " << b[i] << '\n';
+    }
+
+    cout << "\nPointer/offset notation where the pointer is the array name\n";
+
+    for (int offset1 = 0; offset1 < 4; offset1++)
+        cout << "*(b + " << offset1 << ") = " << *(b + offset1) << endl;
+
+    return 0;
+}
+```
+
+Output:
+```
+*(b + 0) = 10
+*(b + 1) = 20
+*(b + 2) = 30
+*(b + 3) = 40
+```
