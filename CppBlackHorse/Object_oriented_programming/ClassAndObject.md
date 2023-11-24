@@ -582,7 +582,17 @@ public:
     Person(int age, int height)
     {
         m_Age = age;
-        new int(height);
+        new int(height);//堆区数据由程序员手动创建，在析构函数被调用前要手动释放
         cout << "Person的有参构造函数调用" << endl;
     }
+
+    ~Person()//析构函数
+    {
+        if (m_Height != NULL)
+        {
+            delete m_Height;
+            m_Height = NULL;//防止野指针出现
+        }
+    }
 ```
+* 如果利用编译器提供的拷贝构造函数，将会执行浅拷贝操作。

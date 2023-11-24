@@ -1,30 +1,17 @@
 #include <iostream>
 using namespace std;
 
-int cubeByValue(int);//Prototype
-void cubeByReference(int *);//Prototype
+size_t getSize(double *);
 
 int main()
 {
-    int number = 5;
-
-    cout << "The original value of number is: " << number << endl;
-
-    number = cubeByValue(number);
-    cout << "\n The New value of n is : " << number << endl;
-
-    number = 5;
-
-    cubeByReference(&number);
-    cout << "\n The New value of n is : " << number << endl;
+    double array[20];
+    cout << "The number of bytes in the array is " << sizeof(array);
+    cout << "\nThe number of bytes returned by getSize is " << getSize(array) << endl;
+    return 0;
 }
 
-int cubeByValue(int n)
+size_t getSize(double *ptr)
 {
-    return n * n * n;
-}
-
-void cubeByReference(int *nPtr)
-{
-    *nPtr = *nPtr * *nPtr * *nPtr;//No return but change "number"
+    return sizeof(ptr);
 }
