@@ -6,6 +6,7 @@
         (size of 1 element) * ( number of elements)
     * size of every int element is 4
     * short 2
+    * pointer 8
     * etc. 
 
 * This operator can be used with 
@@ -113,6 +114,12 @@ int main()
     for (int offset1 = 0; offset1 < 4; offset1++)
         cout << "*(b + " << offset1 << ") = " << *(b + offset1) << endl;
 
+    for (int offset2 = 0; offset2 < 4; offset2++)
+    {
+        cout << "*(bPtr + " << offset2 << ") = "
+        << *(bPtr + offset2) << endl;
+    }
+    
     return 0;
 }
 ```
@@ -123,4 +130,12 @@ Output:
 *(b + 1) = 20
 *(b + 2) = 30
 *(b + 3) = 40
+*(bPtr + 0) = 10
+*(bPtr + 1) = 20
+*(bPtr + 2) = 30
+*(bPtr + 3) = 40
 ```
+
+<mark>注意，对于二维数组arr，*arr会将数组arr的第一个元素的首地址取出，*arr[0]才是输出第一个元素的值。
+
+*arr将行地址变为列地址，**arr取出[0][0]元素的值</mark>
