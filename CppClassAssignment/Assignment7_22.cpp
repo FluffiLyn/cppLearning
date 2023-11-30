@@ -38,10 +38,10 @@ bool solution(int currentRow, int currentColumn, int moveStep, int chessBoard[8]
     }
     
     //Try all possible move
-    for (int i = 0; i < 8; i++)
+    for (int k = 0; k < 8; k++)
     {
-        nextRow += horizontal[i];
-        nextColumn += vertical[i];
+        nextRow += horizontal[k];
+        nextColumn += vertical[k];
         if (judge(nextRow, nextColumn, chessBoard));
         {
             //MoveStep is a counter that records the order of current step
