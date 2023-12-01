@@ -1,3 +1,7 @@
+/*
+Notice: This is brute force algorithm, which is actually not suitable for chessBoard larger than 7*7.
+If you change the initial position of knight, this may output nothing.
+*/
 #include <iostream>
 using namespace std;
 
