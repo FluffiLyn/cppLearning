@@ -1,3 +1,0 @@
-
-  {
-    (*f[choice])(choice);
