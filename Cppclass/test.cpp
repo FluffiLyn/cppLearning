@@ -1,15 +1,35 @@
 #include <iostream>
+#include <string>
+#include <algorithm>
 using namespace std;
+
+struct person
+{
+    char name[10];
+    unsigned int id;
+    double salary;
+};
+
+person allone[6];
+
 int main()
 {
-    int *p = NULL;
-    p = new int(89);
-    if (p == NULL)
+    int i;
+    person temp;
+    for (i = 0; i < 6; i++)
     {
-        cout << "allocation faliure\n";
-        return 0;
+        cout << i << ": name: ";
+        cin.getline(allone[i].name,10);
+        cout << "id: ";
+        cin >> allone[i].id;
+        cout << "salary: ";
+        cin >> allone[i].salary;
+        cout << endl;
     }
-    cout << *p;
-    delete p;
+    
+    //sort by "salary"
+    sort(allone[1], allone[5]);
+
+    for (i = 0; i < 6; i++)
     return 0;
 }
