@@ -34,7 +34,7 @@ struct node
     double salary;
 } * head;
 ```
-![图片](cppLearning/Cppclass/Pics/Lecture7_2.jpg)
+![图片](pics\Lecture7_2_01.jpg)
 
 # 02 Create a Linked List
 ```c++
