@@ -363,4 +363,6 @@ MigrationBackup/
 FodyWeavers.xsd
 
 #.vscode
-.vscode
+/.vscode
+/cppLearning/.vscode
+/CLANG-QUICKSTART/cppLearning/.vscode
