@@ -1,4 +1,1 @@
-# cppLearning
-# 鸡你太美
-## baby
-## oh~
+# Warning: This repository may contain buggy codes. Do not copy them without thinking twice.
