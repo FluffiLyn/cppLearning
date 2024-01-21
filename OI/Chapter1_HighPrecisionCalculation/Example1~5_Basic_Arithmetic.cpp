@@ -164,6 +164,20 @@ void div1(int x, string chara)//x is divisor
 }
 
 //6. Division (high/high)
+//第一个数据用于存储数组长度
+void div2(string chara, string charb)
+{
+    int tmp[256] = {0}, c = 0;
+    init(chara);
+    init(charb);
+}
+
+//将p中的元素复制到q中，并将q中的元素后移n个位置
+void numcpy(int p[], int q[], int n)
+{
+
+}
+
 
 int main()
 {
