@@ -14,8 +14,13 @@ void init(string s, int a[])
 }
 
 //2. Calculation
-void add(int a[], int b[], int lena, int lenb)
+void add(string &chara, string &charb)
 {
+    int a[256] = {0}, b[256] = {0};
+    init(chara, a);
+    init(charb, b);
+    
+    int lena = chara.length(), lenb = charb.length();
     int maxlen = max(lena, lenb);
     int sum[256] = {0};
     
@@ -53,8 +58,12 @@ if (a[i] < b[i])
 
 
 //3. Subtraction
-void subtract(int a[], int b[], string& chara, string& charb, int lena, int lenb)
+void subtract(string& chara, string& charb)
 {
+    int a[256] = {0}, b[256] = {0};
+    init(chara, a);
+    init(charb, b);
+    int lena = chara.length(), lenb = charb.length();
     string n; //Temporary array
     int c[256] = {0}, lenc;//The result
 
@@ -90,9 +99,13 @@ void subtract(int a[], int b[], string& chara, string& charb, int lena, int lenb
 }
 
 //4. Multiplication
-
-void multiply(int a[], int b[], string& chara, string& charb, int lena, int lenb)
+void multiply(string& chara, string& charb)
 {
+    int a[256] = {0}, b[256] = {0};
+    init(chara, a);
+    init(charb, b);
+    int lena = chara.length(), lenb = charb.length();
+    
     int c[256] = {0};//The result
     int maxlen = lena + lenb;
     
@@ -105,7 +118,8 @@ void multiply(int a[], int b[], string& chara, string& charb, int lena, int lenb
             c[i + j] %= 10;//Carry
         }
     }
-    while (c[maxlen - 1] == 0 && maxlen > 1) maxlen--;//The highest 0 does not output
+    //Remove the highest 0
+    while (c[maxlen - 1] == 0 && maxlen > 1) maxlen--;
     
     for (int i = maxlen - 1; i >= 0; i--)
     {
@@ -114,49 +128,81 @@ void multiply(int a[], int b[], string& chara, string& charb, int lena, int lenb
     cout << endl;
 }
 
+
+//5.Division (high/low)
+//一位数一位数地与除数相除，余数乘10加入下一位上
+void div1(int x, string chara)//x is divisor
+{    
+    int lena = chara.size();
+    int a[256] = {0};
+    init(chara, a);
+
+    int c[256] = {0};
+    int remainder = 0;//remainder 余数
+
+    for (int i = lena - 1;i >= 0;i--)
+    {
+		remainder = remainder * 10 + a[i]; //模拟竖式除法中的落位 
+		c[i] = remainder / x;
+		remainder %= x;
+    }
+    
+    //Remove the highest 0
+    while (c[lena - 1] == 0 && lena > 1) lena--;
+    
+    //Print the result
+    for (int i = lena - 1; i >= 0; i--)
+    {
+        cout << c[i];
+    }
+    
+    //If remainder isn't zero, print the remainder
+    if(remainder)
+    {
+        cout << "\nremainder: " << remainder;
+    }
+}
+
+//6. Division (high/high)
+
 int main()
 {
     string chara, charb;
-    int a[256] = {0}, b[256] = {0};
+    int x;
 
     //Addition
     cout << "1. Addition" << endl;
     cout << "Please enter two numbers: " << endl;
     getline(cin, chara);
     getline(cin, charb);
-    int lena = chara.size(), lenb = charb.size();
-    init(chara, a);
-    init(charb, b);
-    add(a, b, lena, lenb);
 
-    memset(a, 0, sizeof(a));
-    memset(b, 0, sizeof(b));
-    
+    add(chara, charb);
+
     //Subtraction
     cout << "2. Subtraction" << endl;
     cout << "Please enter the minuend: " << endl;//minuend 被减数 
     getline(cin, chara);
     cout << "Please enter the subtrahend (must be smaller than the minuend): " << endl;//subtrahend 减数
     getline(cin, charb);
-    lena = chara.size(), lenb = charb.size();
 
-    subtract(a, b, chara, charb, lena, lenb);
-
-    memset(a, 0, sizeof(a));
-    memset(b, 0, sizeof(b));
+    subtract(chara, charb);
     
     //Multiplication
     cout << "3. Multiplication" << endl;
     cout << "Please enter two numbers: " << endl;
     getline(cin, chara);
     getline(cin, charb);
-    lena = chara.size(), lenb = charb.size();
-    init(chara, a);
-    init(charb, b);
-    multiply(a, b, chara, charb, lena, lenb);
 
-    memset(a, 0, sizeof(a));
-    memset(b, 0, sizeof(b));
+    multiply(chara, charb);
+
+    //Division (high/low)
+    cout << "4. Division (high/low)" << endl;
+    cout << "Please enter the dividened (high precision):" << endl;
+    getline(cin, chara);
+
+    cout<< "Please enter the divisor (low precision):" << endl;
+    cin >> x;
+    div1(x, chara);
     
     return 0;
 }
