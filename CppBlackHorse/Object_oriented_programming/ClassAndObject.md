@@ -596,3 +596,140 @@ public:
     }
 ```
 * 如果利用编译器提供的拷贝构造函数，将会执行浅拷贝操作。
+
+## 2.6 初始化列表
+语法：`构造函数(): 属性1(值1), 属性2(值2)...{}`\
+例:
+```c++
+#include <iostream>
+using namespace std;
+class Person
+{
+public:
+    /*传统初始化操作
+    Person(int a, int b, int c)
+    {    
+        m_A = a;
+        m_B = b;
+        m_C = c;
+    }*/
+    
+    //初始化列表
+    Person(int a, int b, int c):m_A(a), m_B(b), m_C(c)
+    {}
+
+    int m_A;
+    int m_B;
+    int m_C;
+};
+
+void test01()
+{
+
+    Person p(10, 20, 30);
+    cout << p.m_A << endl;
+    cout << p.m_B << endl;
+    cout << p.m_C << endl;
+}
+
+int main()
+{
+    test01();
+    return 0;
+}
+```
+使用初始化列表的好处：
+* 1. 类成员中存在常量时，只能初始化而不能赋值。
+* 2. 类成员存在引用时，也只能初始化。
+* 3. 在大型项目中，类中成员变量极多的情况下，初始化列表的效率更高。
+
+## 2.7 类对象作为成员
+成员可以使另一个类的对象，我们称该成员为对象成员。如：
+```c++
+class A{};
+class B
+{
+    A a;
+}
+```
+例：
+```c++
+#include <iostream>
+#include <string>
+using namespace std;
+
+//手机类
+class Phone
+{
+public:
+    Phone(string pBrand)//构造函数
+    {
+        m_Brand = pBrand;
+    }
+    string m_Brand;
+};
+
+//人  类
+class Person
+{
+public:
+    //相当于Phone m_Phone = pName;以下是一种隐式转换
+    Person(string name, string pName):m_Name(name),m_Phone(pName)
+    {
+
+    }
+    string m_Name;
+    Phone m_Phone;
+};
+
+void test01()
+{
+    Person p("张三", "iPhone114514");
+    cout << p.m_Name << "拿着" << p.m_Phone.m_Brand;
+}
+
+int main()
+{
+    test01();
+    return 0;
+}
+```
+当其他类对象作为本类的成员时，其他类对象的构造函数先于本类完成执行
+
+## 2.8 静态成员
+静态成员就是在成员变量、函数前加上static。
+* 静态成员变量
+    * 所有对象共享同一份数据
+    * 在编译阶段分配内存
+    * ***类内***声明，***类外***初始化 
+
+* 静态成员函数
+    * 所有对象共享同一个函数
+    * 静态成员函数只能访问静态成员变量
+
+例：
+```c++
+#include <iostream>
+using namespace std;
+
+class Person
+{
+public:
+    //所有对象共享同一份数据
+    static int m_A;
+
+
+}
+
+void test01()
+{
+    Person p;
+    cout << p.m_A << endl;
+}
+
+int main()
+{
+    test01();
+    return 0;
+}
+```
