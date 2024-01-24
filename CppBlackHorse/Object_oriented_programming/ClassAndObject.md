@@ -142,7 +142,7 @@ public://创建一个对外的“接口”
     }
 
     //设置情人
-    voidsetLover(string lover)
+    void setLover(string lover)
     {
         m_Lover = lover;
     }
@@ -707,7 +707,7 @@ int main()
     * 所有对象共享同一个函数
     * 静态成员函数只能访问静态成员变量
 
-例：
+例1：静态成员变量
 ```c++
 #include <iostream>
 using namespace std;
@@ -715,16 +715,35 @@ using namespace std;
 class Person
 {
 public:
-    //所有对象共享同一份数据
+    //类内声明
     static int m_A;
+};
 
-
-}
+//类外初始化。要写Person作用域。
+int Person::m_A = 114514;
 
 void test01()
 {
     Person p;
     cout << p.m_A << endl;
+
+    //通过p2来修改m_A数据，再通过p访问m_A
+    Person p2;
+    p2.m_A = 200;
+    
+    //会发现p的m_A也被修改了，从而说明所有对象共享同一份数据
+    cout << p.m_A << endl;
+}
+
+void test02()
+{
+    //静态成员变量有两种访问方式
+    //1、通过对象进行访问
+    //Person p;
+    //cout << p.m_A << endl;
+    
+    //2、通过类名进行访问
+    cout << Person::m_A << endl;
 }
 
 int main()
@@ -733,3 +752,80 @@ int main()
     return 0;
 }
 ```
+例2：静态成员函数
+```c++
+#include <iostream>
+using namespace std;
+
+class Person
+{
+public:
+    //静态成员函数
+    static void func()
+    {
+        m_A = 100;//静态成员函数可以访问 静态成员变量
+        //m_B = 200; 会报错。不可访问 非静态成员变量
+        cout << "静态成员函数调用" << endl;
+    }
+    static int m_A;//静态成员变量
+    int m_B;//非静态！！此变量属于特定的对象，func()不知道为哪一个对象的m_B赋值，于是会报错
+}
+
+void test01()
+{
+    //1、通过对象访问（与例1类似）
+    //2、通过类名访问
+    Person::func();
+}
+
+int main()
+{
+    test01();
+    return 0;
+}
+```
+# 3. c++对象模型和this指针
+
+## 3.1 成员变量和成员函数分开存储
+类内的的成员变量和成员函数分开存储。只有非静态成员才属于类的对象上。\
+例：
+```c++
+#include <iostream>
+using namespace std;
+
+class Person1{};//空类
+
+void test01()
+{
+    Person1 p1;
+    //空对象占用内存空间是 1
+    //c++编译器会给每个空对象也分配一个字节空间，为了区分空对象站内存的位置。
+    //每个空对象也有一个独一无二的内存地址
+    cout << "Size of p is "<< sizeof(p1) << endl;
+}
+
+class Person2
+{
+    int m_A;//非静态成员变量 属于类对象上
+    static int m_B;//静态成员变量 不属于类对象上
+    void func(){}//非静态成员函数 不属于类对象上
+};
+int Person2::m_B = 114514;
+
+void test02()
+{
+    Person2 p2;
+    //此处输出4，包括m_A的长度，不包括m_B和func()的长度。
+    cout << "Size of p2 is " << sizeof(p2) << endl;
+}
+
+int main()
+{
+    test01();
+    test02();
+    return 0;
+}
+
+```
+
+## 3.2 this指针概念
