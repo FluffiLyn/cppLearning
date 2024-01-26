@@ -470,7 +470,7 @@ int main()
 
 ```
 
-## 2.3 拷贝构造函数的调用时机
+### 2.3 拷贝构造函数的调用时机
 当以拷贝的方式初始化对象时会调用拷贝构造函数，这里需要注意两个关键点，分别是以***拷贝的方式***和***初始化对象***。初始化对象是指，为对象分配内存后第一次向内存中填充数据，这个过程会调用构造函数，对象被创建后必须立即初始化。也就是说***只要创建对象就会调用构造函数***。
 
 三种情况：
@@ -556,7 +556,7 @@ int main()
 }
 ```
 
-## 2.4 构造函数调用规则
+### 2.4 构造函数调用规则
 默认情况下，c++编译器至少给一个类添加3个函数
 * 默认构造函数（无参，函数体为空）
 * 默认析构函数（无参，函数体为空）
@@ -568,7 +568,7 @@ int main()
 
 不放例子了，之前有提过。
 
-## 2.5 深拷贝和潜拷贝
+### 2.5 深拷贝和潜拷贝
 <font color=red>***面试经典问题之一***</font>
 
 浅拷贝：简单的赋值拷贝操作
@@ -597,7 +597,7 @@ public:
 ```
 * 如果利用编译器提供的拷贝构造函数，将会执行浅拷贝操作。
 
-## 2.6 初始化列表
+### 2.6 初始化列表
 语法：`构造函数(): 属性1(值1), 属性2(值2)...{}`\
 例:
 ```c++
@@ -643,7 +643,7 @@ int main()
 * 2. 类成员存在引用时，也只能初始化。
 * 3. 在大型项目中，类中成员变量极多的情况下，初始化列表的效率更高。
 
-## 2.7 类对象作为成员
+### 2.7 类对象作为成员
 成员可以使另一个类的对象，我们称该成员为对象成员。如：
 ```c++
 class A{};
@@ -696,7 +696,7 @@ int main()
 ```
 当其他类对象作为本类的成员时，其他类对象的构造函数先于本类完成执行
 
-## 2.8 静态成员
+### 2.8 静态成员
 静态成员就是在成员变量、函数前加上static。
 * 静态成员变量
     * 所有对象共享同一份数据
@@ -784,9 +784,9 @@ int main()
     return 0;
 }
 ```
-# 3. c++对象模型和this指针
+## 3. c++对象模型和this指针
 
-## 3.1 成员变量和成员函数分开存储
+### 3.1 成员变量和成员函数分开存储
 类内的的成员变量和成员函数分开存储。只有非静态成员才属于类的对象上。\
 例：
 ```c++
@@ -828,4 +828,227 @@ int main()
 
 ```
 
-## 3.2 this指针概念
+### 3.2 this指针概念
+this指针指向被调用的**成员函数**所属的对象。它不需要定义，可直接使用。它被隐含在每一个非静态成员函数内。\
+\
+用途：
+* 当**形参**和**成员**变量同名时，可用this指针区分。
+* 在类的**非静态**成员函数中返回对象本身，可用return *this。\
+
+例:
+```c++
+#include <iostream>
+using namespace std;
+
+class Person
+{
+public:
+    Person(int age)
+    {
+        this->age = age;//this指向的age是成员变量age，与形参age区分开来
+    }
+    int age;
+
+    Person& PersonAddAge(Person &p)
+    {
+        //将另一个“人”的年龄加到自己年龄上（好怪哦）
+        this->age += p.age;
+        
+        //this是指向p2的指针，*this是p2本体
+        return *this;
+    } 
+};
+
+//1、解决名称冲突
+void test01()
+{
+    Person p1(10);
+    cout << "p1的年龄为" << p1.age << endl;
+}
+
+//返回对象本身用*this
+void test02()
+{
+    Person p1(10);
+    Person p2(10);
+
+    //链式编程思想
+    p2.PersonAddAge(p1).PersonAddAge(p1).PersonAddAge(p1);//加三次
+    cout << "p2的年龄为" << p2.age << endl;
+}
+
+int main()
+{
+    test01();
+    test02();
+    return 0;
+}
+```
+注意：对于PersonAddAge函数，如果前面是值传递而非引用传递，则后面输出p2的结果是20。这是因为***值传递会创建新的对象，而引用传递则直接操作原始对象***，第一次调用p2.PersonAddAge(p1)时，实际上是将p2和p1的age相加得到20，然后返回一个***新的Person对象p（其age为20）***（实际上这个对象的名称是未知的，也不重要），但这个新的对象并没有赋值给p2，所以p2的age仍然是初始值10。接着连续调用PersonAddAge函数两次，每次都是将新的Person对象p（age为20）与p1的age相加，结果都是20，然后将结果返回给一个新的Person对象p，但这些新的对象并没有赋值给p2，所以p2的age仍然是20。
+
+### 3.3 空指针访问成员函数
+c++空指针可以调用成员函数，但是要注意有没有用到this指针。如果有，需要加以判断，保证代码的健壮性。 \
+例：
+```c++
+#include <iostream>
+using namespace std;
+
+class Person
+{
+public:
+
+    void showClassName()
+    {
+        cout << "This is Person class." << endl;
+    }
+
+    void showPersonAge()
+    {
+        cout << "Age = " << m_Age << endl;
+    }
+    int m_Age;
+   
+};
+
+
+void test01()
+{
+    Person * p = NULL;
+    p->showClassName();//不会报错
+    //p->showPersonAge();//会报错
+}
+
+int main()
+{
+    test01();
+    return 0;
+}
+
+```
+p->showPersonAge()报错的原因是：该函数内的m_Age是默认为this->m_Age的，而this指针（也即p）是空的，因此报错
+* 为了防范此bug，我们可以用if判断是否为空指针，若为指针直接return。
+
+### 3.4 const修饰成员函数
+1.常函数
+* 被const修饰的成员函数就叫常函数
+* 常函数内**不可以**修改成员属性
+* 成员属性声明时加关键字mutable后，在常函数中依然可以修改
+
+2.常对象
+* 被const修饰的对象称为常对象
+* **常对象只能调用常函数**
+
+例:
+```c++
+#include <iostream>
+using namespace std;
+
+class Person
+{
+public:
+    //常函数
+    //在成员函数后加const，实际上修饰的是this指针的指向。
+    void showPerson() const 
+    {
+        //this->m_A = 100;//会报错
+        this->m_B = 100;//不会报错
+    }
+
+    //普通成员函数
+    void func()
+    {}
+
+    int m_A;
+    mutable int m_B;//const不允许我改？诶，给你加个mutable！
+};
+
+
+void test01()
+{
+    Person p;
+    p.showPerson();
+}
+
+//常对象
+void test02()
+{
+    const Person p;
+    //p.m_A = 100;//会报错
+    p.m_B = 100;//不会报错
+
+    //p.func();//会报错
+    p.showPerson();//不会报错
+}
+
+int main()
+{
+    test01();
+    test02();
+    return 0;
+}
+
+```
+* this指针的本质是**常量指针**，它指向的内容不可修改。
+
+## 4. 友元
+在程序中 ，有些私有属性需要让类外的一些函数或者类进行访问，就需要运用友元技术。
+
+友元的目的是让一个函数或者类访问领一个类中私有成员。它的关键字是friend。
+
+友元的三种实现：
+* 全局函数做友元
+* 类做友元
+* 成员函数做友元
+
+例1：全局函数做友元
+```c++
+#include <iostream>
+#include <string>
+using namespace std;
+
+//建筑物类
+class Building
+{
+    //goodGay全局函数是Building的友元，可以访问Building的私有成员
+    friend void goodGay(Building *building);
+public:
+    Building()
+    {
+        m_SittingRoom = "客厅";
+        m_BedRoom = "卧室";
+    }
+public:
+    string m_SittingRoom;//客厅
+private:
+    string m_BedRoom;//卧室
+
+};
+
+//全局函数
+void goodGay(Building *building)//好基友
+{
+    cout << "好基友全局函数正在访问：" << building->m_SittingRoom << endl;
+    //若没有前面的friend，则下一行代码会报错。
+    cout << "好基友全局函数正在访问：" << building->m_BedRoom << endl;
+    
+}
+
+
+//常对象
+void test01()
+{
+    Building building;
+    goodGay(&building);
+}
+
+int main()
+{
+    test01();
+
+    return 0;
+}
+```
+例2：类做友元
+```c++
+
+```
