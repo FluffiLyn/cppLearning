@@ -107,6 +107,8 @@ int main()
 * struct 默认权限为公共
 * class 默认权限为私有
 
+（注：c++11开始，struct可以修改权限，也有封装、继承和多态的特性）
+
 ### 1.3 成员属性设置为私有的好处
 
 优点1：将所有成员属性设为私有，可以自己控制读写权限。\
@@ -295,6 +297,7 @@ int main()
 
 ```c++
 /*xxx.h*/
+
 #pragma once//防止重复引用
 #include <iostream>
 using namespace std;
@@ -310,6 +313,7 @@ private:
 ```
 ```c++
 /*xxxx.cpp*/
+
 #include "xxx.h"
 void Circle::setX(int x)//代表setX是Circle作用域的函数
 {
@@ -1117,5 +1121,199 @@ class Building
 
 ## 5. 运算符重载
 
-## 5.1 加号运算符重载
+### 5.1 加号运算符重载
 作用：实现两个自定义数据类型相加的运算。
+
+例1：成员函数重载+号
+```c++
+#include <iostream>
+#include <string>
+using namespace std;
+
+class Person
+{
+public:
+    Person operator+(Person &p)
+    {
+        Person temp;
+        temp.m_A = this->m_A + p.m_A;//this指的是.operator+(p)前面的对象
+        temp.m_B = this->m_B + p.m_B;
+        return temp;//不能返回引用，因为temp会被销毁，此时引用是空指针
+    }
+
+    int m_A;
+    int m_B;
+
+};
+
+void test01()
+{
+    Person p1;
+    p1.m_A = 10;
+    p1.m_B = 10;
+
+    Person p2;
+    p2.m_A = 10;
+    p2.m_B = 10;
+
+    //本质：Person p3 = p1.operator+(p2);
+    Person p3 = p1 + p2;
+    
+    cout << "p3.m_A=" << p3.m_A << endl;
+    cout << "p3,m_B=" << p3.m_B << endl;
+}
+
+int main()
+{
+    test01();  
+
+    return 0;
+}
+```
+例2：全局函数重载+号
+```c++
+//本质：Person p3 = operator+(p1, p2);
+Person operator+(Person &p1, Person &p2)
+{
+    Person temp;
+    temp.m_A = p1.m_A + p2.m_A;
+    temp.m_B = p1.m_B + p2.m_B;
+    return temp;
+}
+```
+注：
+* 运算符重载也可以发生函数重载。你可以再次将它定义，例如Person operator+(Person &p1, int x)。
+* 内置的运算符不可改变
+* 不要乱写重载的内容。比如加法重载里面写个减法的内容，造孽啊！
+
+### 5.2 左移运算符重载
+作用：输出自定义数据类型
+
+例：
+```c++
+#include <iostream>
+#include <string>
+using namespace std;
+
+class Person
+{
+    friend ostream & operator<<(ostream &cout, Person &p);
+
+public:
+    
+    //利用成员函数重载 左移运算符
+    //一般不会这么做，因为无法实现cout在左侧
+    //void operator<<(cout){};
+
+    int m_A;
+    int m_B;
+
+private:
+    int m_C = 10;
+};
+
+//利用全局函数重载左移运算符
+//本质：operator<<(cout,p);，简化成cout << p
+//一定要用引用传入cout，因为cout对象只能有一个。
+//如果想用链式编程思想在后面继续输出，<<重载就必须返回cout，重载函数前面不能写成void
+ostream & operator<<(ostream &cout, Person &p)
+{
+    cout << "m_A = " << p.m_A << " m_B = " << p.m_B
+        << " m_C = " << p.m_C;
+    return cout;
+}
+
+void test01()
+{
+    Person p;
+    p.m_A = 10;
+    p.m_B = 10;
+
+    //重载<<之后以下语句就能正常执行
+    cout << p << endl;
+}
+
+int main()
+{
+    test01();  
+
+    return 0;
+}
+
+```
+注：
+* 1、cout用于在计算机屏幕上显示信息，是C++中ostream类型的***对象***，C++的输出是用“流” (stream)的方式实现的，流运算符的定义等信息是存放在C++的输入输出流库中的，因此如果在程序中使用cout和流运算符，就必须使用预处理命令把头文件stream包含到本文件中，即< iostream >库，该库定义的名字都在命名空间std中，所以·cout全称是std::cout 。
+
+* 2、对于ostream & operator<<(ostream &cout, Person &p)，用函数指针的原因是：ostream对象通常不允许通过拷贝构造函数进行复制，而直接返回ostream对象时会触发拷贝构造函数的调用。
+
+* 3、所有的重载都最好是***全局函数重载***，这样便于规范代码，否则会有局限性。
+
+### 5.3 自增运算符重载
+作用：实现自己的整型数据
+
+例1：重载前置++运算符
+```c++
+class MyInteger
+{
+public:
+    MyInteger()
+    {
+        m_Num = 0;
+    }
+
+    int m_Num;
+}
+
+//重载前置++运算符
+MyInteger & operator++()
+{
+    //先进行++运算
+    ++m_Num;
+    
+    //再将自身返回
+    return *this;
+}
+```
+例2：重载后置++运算符
+```c++
+class MyInteger
+{
+public:
+    MyInteger()
+    {
+        m_Num = 0;
+    }
+
+    int m_Num;
+}
+
+//重载后置++运算符
+//int代表占位参数，用于区分前置和后置递增
+MyInteger operator++(int)
+{
+    //先记录当时结果
+    MyInteger temp = *this;
+    //后递增
+    m_Num++;
+    //最后记录的结果返回
+    return temp;
+}
+```
+注：
+两个函数的返回类型不同。前置++返回的是引用，而后置++返回的是值。
+
+在c++中，
+* ++a表示取a的地址，增加它的内容，然后把值放在寄存器中；
+* a++表示取a的地址，把它的值装入寄存器，然后增加内存中的a的值；
+
+假设a=0，那么(a++)++可以通过编译，但是它输出的值是1，具体原因已在章节3.2解释过。
+
+### 5.4 赋值运算符重载
+
+c++编译器至少给一个类添加4个函数：
+* 默认构造函数
+* 默认析构函数
+* 默认拷贝构造函数
+* 赋值运算符operator=，对属性进行值拷贝
+
+如果类中有属性指向堆区，做赋值操作时也会出现深浅拷贝问题。

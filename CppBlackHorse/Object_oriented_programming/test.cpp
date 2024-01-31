@@ -2,55 +2,34 @@
 #include <string>
 using namespace std;
 
-//建筑物类
-class Building;//声明
-class GoodGay
+class Person
 {
 public:
-    GoodGay();//声明
-
-    void visit();//参观函数 访问Building中的属性
-
-    Building * building;
-};
-
-class Building
-{
     
-    friend class GoodGay;
+    Person(int age)
+    {
+        m_Age = new int(age);
+    }
 
-public:
-    Building();
+    //不要在析构函数那里delete这个指针
+    int *m_Age;
 
-    string m_SittingRoom;//客厅
-
-private:
-    string m_BedRoom;//卧室
 };
 
-//可以类内声明，类外写成员函数
-GoodGay::GoodGay()
-{   //由于GoodGay内的Building变量是指针，所以要用new的方法返回该对象的指针
-    building = new Building;
-}
 
-//类外写成员函数
-Building::Building()
+void test01()
 {
-    m_SittingRoom = "客厅";
-    m_BedRoom = "卧室";
-}
-
-void GoodGay::visit()
-{
-    cout << "好基友类正在访问：" << building->m_SittingRoom << endl;
-    cout << "好基友类正在访问：" << building->m_BedRoom << endl;
+    Person p1(18);
+    cout << "p1的年龄为" << *p1.m_Age << endl;
+    Person p2(20);
+    
+    p2 = p1;
+    cout << "p1的年龄为" << *p2.m_Age << endl;
 }
 
 int main()
 {
-    GoodGay gg;
-    gg.visit();
-
+    test01();  
+    
     return 0;
 }
