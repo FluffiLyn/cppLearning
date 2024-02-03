@@ -1187,7 +1187,7 @@ Person operator+(Person &p1, Person &p2)
 * 不要乱写重载的内容。比如加法重载里面写个减法的内容，造孽啊！
 
 ### 5.2 左移运算符重载
-作用：输出自定义数据类型
+作用：输出自定义数据类型。
 
 例：
 ```c++
@@ -1249,7 +1249,7 @@ int main()
 * 3、所有的重载都最好是***全局函数重载***，这样便于规范代码，否则会有局限性。
 
 ### 5.3 自增运算符重载
-作用：实现自己的整型数据
+作用：实现自己的整型数据。
 
 例1：重载前置++运算符
 ```c++
@@ -1316,4 +1316,631 @@ c++编译器至少给一个类添加4个函数：
 * 默认拷贝构造函数
 * 赋值运算符operator=，对属性进行值拷贝
 
-如果类中有属性指向堆区，做赋值操作时也会出现深浅拷贝问题。
+使用这个默认的赋值运算符操作类对象时，该运算符会把这个类的所有数据成员都进行一次赋值操作。
+
+如果类中有属性指向堆区(如new了一个指针)，那么会出现堆区内存重复释放的问题，如：
+```c++
+#include <iostream>
+using namespace std;
+
+class Person
+{
+public:
+    Person(int age)
+    {
+        m_Age = new int(age);
+    }
+
+    ~Person()
+    {
+        if (m_Age != NULL)
+        {
+            delete m_Age;
+            m_Age = NULL;
+        }
+    }
+
+    int *m_Age;
+};
+ 
+int main()
+{
+    Person p1(10);
+    Person p2(20);
+    p2 = p1;
+    
+    cout << "p1的年龄是：" << *p1.m_Age << endl;
+    cout << "p2的年龄是：" << *p2.m_Age << endl;
+    return 0;
+}
+```
+在默认的赋值运算符函数中，它会进行**浅拷贝**操作，即只是简单地将p1的成员变量值复制给p2的成员变量。由于m_Age是一个指向动态分配内存的指针，浅拷贝只会复制指针的值，
+
+所以，在这段代码中，p2的m_Age指针与p1的m_Age指针指向了同一块内存地址。当p2的析构函数被调用时，会释放这块内存，而p1的m_Age指针仍然指向已经被释放的内存地址。
+
+因此，当尝试打印p1.m_Age和p2.m_Age的值时，由于p1.m_Age指向的内存已经无效，访问它会导致程序崩溃。
+
+解决方法：利用赋值运算符重载进行**深拷贝**。
+
+例：
+```c++
+Person & operator=(Person &p)
+{
+    //先判断是否有属性在堆区，若有，则先释放干净，后深拷贝
+    if (m_Age != NULL)
+    {
+        delete m_age;
+        m_Age = NULL;
+    }
+
+    m_Age = new int(*p.m_Age);   
+    
+    return *this; 
+}
+```
+
+### 5.5 关系运算符重载
+作用：让两个自定义对象进行对比操作。
+
+例：
+```c++
+#include <iostream>
+#include <string>
+using namespace std;
+
+class Person
+{
+public:
+    Person(string name, int age)
+    {
+        m_Name = name;
+        m_Age = age;
+    }
+
+    string m_Name;
+    int m_Age;
+
+    //请思考：为什么这里不用引用
+    bool operator==(Person &p)
+    {
+        if(m_Name == p.m_Name && m_Age == p.m_Age)
+        return true;
+        return false;
+    }
+};
+
+
+void test01()
+{
+    Person p1("Tom", 18);
+    Person p2("Jerry", 18);
+
+    if (p1 == p2)
+    {
+        cout << "p1 equals to p2." << endl;
+    }
+    else
+    {
+        cout << "They are not equal." << endl;
+    }
+}
+
+int main()
+{
+    test01();
+    return 0;
+}
+```
+
+类似地，也可以写`bool operator!=(Person &p)`
+
+### 5.6 函数调用运算符重载
+* 函数调用运算符()也可以重载
+* 由于重载后使用的方式非常像函数的调用，因此称为仿函数
+* 仿函数没有固定写法
+
+例：
+```c++
+#include <iostream>
+#include <string>
+using namespace std;
+
+//打印输出类
+class MyPrint
+{
+public:
+
+    //重载函数调用运算符
+    void operator()(string text)
+    {
+        cout << text << endl;
+    }
+
+};
+
+void MyPrint02(string text)
+{
+    cout << text << endl;
+}
+
+void test01()
+{
+    MyPrint print;
+    print("Hello world!");//仿函数
+    
+    MyPrint02("Hello world!");//函数
+}
+
+int main()
+{
+    test01();
+
+    return 0;
+}
+
+```
+当然，你也可以这样调用：
+```c++
+cout << MyPrint()("Hello world!");
+```
+这个被称为匿名函数对象，执行完这一行后就会被销毁。
+
+## 6. 继承
+就像生物学的物种分类一样，有些类与类之间存在一些关系：下级成员拥有上一级的共性，还有自己的特性。
+
+此时我们可以考虑利用继承的技术，减少**重复代码**。
+
+### 6.1 继承的基本语法
+`class 子类 : 继承方式 父类`
+
+错误示范：
+```c++
+#include <iostream>
+#include <string>
+using namespace std;
+
+//普通实现页面
+
+//Java教程页面
+class Java 
+{
+public:
+    void header()
+    {
+        cout << "首页、公开课、登录、注册...（公共header）" << endl;
+    }
+    void footer()
+    {
+        cout << "帮助中心、交流合作、站内地图...（公共footer）" << endl;
+    }
+    void left()
+    {
+        cout << "Java、Python、C++...（公共分类列表）" << endl;
+    }
+    void content()
+    {
+        cout << "Java学科视频" << endl;
+    }
+};
+
+//Python页面
+class Python 
+{
+public:
+    void header()
+    {
+        cout << "首页、公开课、登录、注册...（公共header）" << endl;
+    }
+    void footer()
+    {
+        cout << "帮助中心、交流合作、站内地图...（公共footer）" << endl;
+    }
+    void left()
+    {
+        cout << "Java、Python、C++...（公共分类列表）" << endl;
+    }
+    void content()
+    {
+        cout << "Python学科视频" << endl;
+    }
+};
+
+//C++页面
+class Cpp 
+{
+public:
+    void header()
+    {
+        cout << "首页、公开课、登录、注册...（公共header）" << endl;
+    }
+    void footer()
+    {
+        cout << "帮助中心、交流合作、站内地图...（公共footer）" << endl;
+    }
+    void left()
+    {
+        cout << "Java、Python、C++...（公共分类列表）" << endl;
+    }
+    void content()
+    {
+        cout << "C++学科视频" << endl;
+    }
+};
+
+void test01()
+{
+    cout << "Java下载视频页面如下：" << endl;
+    Java jvav;
+    jvav.header();
+    jvav.footer();
+    jvav.left();
+    jvav.content();
+
+    cout << "---------------------------" << endl;
+    cout << "Python下载视频页面如下：" << endl;
+    Python py;
+    py.header();
+    py.footer();
+    py.left();
+    py.content();
+
+    cout << "---------------------------" << endl;
+    cout << "C++下载视频页面如下：" << endl;
+    Cpp cpp;
+    cpp.header();
+    cpp.footer();
+    cpp.left();
+    cpp.content();
+}
+
+int main()
+{
+    test01();
+    return 0;
+}
+```
+cv工程师，你好
+
+正确示范：使用继承
+```c++
+class BasePage
+{
+public:
+    void header()
+    {
+        cout << "首页、公开课、登录、注册...（公共header）" << endl;
+    }
+    void footer()
+    {
+        cout << "帮助中心、交流合作、站内地图...（公共footer）" << endl;
+    }
+    void left()
+    {
+        cout << "Java、Python、C++...（公共分类列表）" << endl;
+    }
+};
+
+//Java页面
+class Java:public BasePage//继承
+{
+public:
+    void content()
+    {
+        cout << "Java学科视频" << endl;
+    }
+};
+//其余同理
+```
+
+### 6.2 继承方式
+public, protected, private.
+
+* 1、子类无法访问父类private内容
+* 2、公有继承：父类的public和protected都原封不动地继承至子类
+* 3、保护继承：父类的public和protected继承至子类后都是protected
+* 4、私有继承：父类的public和protected继承至子类后都是private
+
+### 6.3 继承中的对象模型
+父类中**所有非静态成员属性**都会被子类继承。
+
+父类中的私有成员属性被编译器隐藏了，因此**无法访问**，但是**会被继承下去**。
+
+可以用sizeof(ClassName)来验证。
+
+### 6.4 继承中构造和析构顺序
+父构->子构->子析->父析
+
+遵循FILO（先进后出）（doge
+
+### 6.5 继承同名成员处理方式
+问题：当子类与父类出现同名的**成员**，如何通过子类对象，访问子类火父类中同名的数据呢？
+
+答：
+* 访问子类同名成员 直接访问即可
+* 访问父类同名成员 需要加作用域
+
+```c++
+#include <iostream>
+using namespace std;
+
+class Base
+{
+public:
+    Base()
+    {
+        m_A = 100;
+    }
+
+    void func()
+    {
+        cout << "Base的func()调用" << endl;
+    }
+    
+    void func(int a)
+    {
+        cout << "Base的func(int a)调用" << endl;
+    }
+    int m_A;
+};
+
+class Son : public Base
+{
+public:
+    Son()
+    {
+        m_A = 200;
+    }
+
+    void func()
+    {
+        cout << "Son的func()调用" << endl;
+    }
+
+    int m_A;
+};
+
+//同名成员属性处理
+void test01()
+{
+    Son s;
+    cout << "Son m_A = " << s.m_A << endl;
+    cout << "Base m_A = " << s.Base::m_A << endl;
+}
+
+//同名成员函数处理
+void test02()
+{
+    Son s;
+    s.func();//子类成员函数
+    s.Base::func();//父类成员函数1
+    s.Base::func(114514);//父类成员函数2
+}
+
+int main()
+{
+    test01();
+    test02();
+    return 0;
+}
+```
+
+### 6.6 多继承语法
+C++允许一个类继承多个类。
+
+语法:`class 子类 : 继承方式 父类1, 继承方式 父类2, ...`
+
+多继承可能引发父类中有同名成员出现，需要加作用域区分
+
+**实际开发中不建议用多继承**。
+
+例：
+```c++
+#include <iostream>
+using namespace std;
+
+class Base1
+{
+public:
+
+    Base1()
+    {
+        m_A = 100;
+    }
+    int m_A;
+};
+
+class Base2
+{
+public:
+
+    Base2()
+    {
+        m_B = 200;
+    }
+    
+    int m_A;
+    int m_B;
+};
+
+class Son:public Base1, public Base2
+{
+public:
+
+    Son()
+    {
+        m_C = 300;
+        m_D = 400;
+    }
+
+    int m_C;
+    int m_D;
+};
+
+void test01()
+{
+    Son s;
+    cout << "sizeof(s) = " << sizeof(s) << endl;
+    cout << "m_A = " << s.m_A << endl;
+    cout << "m_A = " << s.Base1::m_A << endl;
+}
+
+
+int main()
+{
+    test01();
+
+    return 0;
+}
+```
+
+### 6.7 菱形继承
+概念：两个子类（派生类）继承同一个父类（基类），又有一个类同时继承两个子类。又称钻石继承。
+
+例：
+```c++
+#include <iostream>
+using namespace std;
+
+//动物类
+class Animal
+{
+public:
+
+    int m_Age;
+};
+
+//羊类
+class Sheep:public Animal{};
+
+//驼类
+class Camel:public Animal{};
+
+//羊驼类
+class Alpaca:public Sheep, public Camel{};
+
+void test01()
+{
+    Alpaca alp;
+    alp.Sheep::m_Age = 18;
+    alp.Camel::m_Age = 28;
+
+    cout << "alp.Sheep::m_Age = " << alp.Sheep::m_Age << endl;
+    cout << "alp.Camel::m_Age = " << alp.Camel::m_Age << endl;
+}
+
+
+int main()
+{
+    test01();
+
+    return 0;
+}
+```
+（注：生物学上，羊驼和羊几乎没有亲缘关系，而与骆驼有很很大关系。本例仅以字面意义来演示菱形继承）（逃
+
+在上面的示例代码中，Sheep类和Camel类都继承了Animal类的m_Age属性，导致两个子类的m_Age重复了，使得资源浪费。
+
+为了避免此类浪费，我们可以使用关键字virtual，即**虚继承**，可解决菱形继承带来的资源浪费。
+* 此时Animal类称为虚基类
+
+
+```c++
+class Sheep:virtual public Animal{};
+class Camel:virtual public Animal{};
+```
+访问方式直接写成如下形式
+```c++
+cout << alp.m_Age;
+```
+
+**原理：** 虚继承后，派生类多了一个vbptr（virtual base pointer），称为***虚基类指针***，它指向虚基类表（vbtable）。vbtable包含了偏移量信息，这些信息指示了虚基类相对于派生类对象起始地址的偏移量。通过这种机制，即使在复杂的继承体系中，程序也能正确地定位和访问虚基类的成员。
+
+## 7. 多态
+
+### 7.1 多态的基本概念
+多态指的是**同一个方法**调用，由于**对象不同**可能会有不同的行为。
+
+多态分为两类：
+* 1、静态多态：函数重载和运算符重载属于静态多态，复用函数名
+* 2、动态多态：派生类和虚函数实现运行时多态
+
+两者区别：
+* 1、静态多态的函数地址早绑定————**编译**阶段确定函数地址
+* 2、动态多态的函数地址晚绑定————**运行**阶段确定函数地址
+
+例1：
+```c++
+#include <iostream>
+using namespace std;
+
+//动物类
+class Animal
+{
+public:
+    void sound()
+    {
+        cout << "动物在叫" << endl;
+    }
+};
+
+//猫
+class Cat :public Animal
+{
+public:
+    void sound()
+    {
+        cout << "猫在叫" << endl;
+    }
+};
+
+
+//如果想执行“猫在叫”，则这个函数地址需要在运行阶段进行绑定。
+void makeSound(Animal &animal)
+{
+    animal.sound();
+}
+
+void test01()
+{
+    Cat cat;
+    makeSound(cat);
+}
+
+int main()
+{
+    test01();
+
+    return 0;
+}
+```
+其中，`void makeSound(Animal &animal)`是执行动物“叫唤”的函数。它的地址**早绑定**（在编译阶段确定函数地址）。调用makeSound时传入的是Cat类，这是合法的，因为c++允许父子之间的类型转换（父类可转子类，而子类不可转父类），然而此时调用的是**父类**Animal的sound()函数。
+
+如果想执行“猫在叫”，则这个函数地址**晚绑定**（在运行阶段进行绑定）。也就是说，要利用虚函数来构成动态多态。
+
+例2：
+```c++
+//将原cpp文件的Animal类修改为如下：
+class Animal
+{
+public:
+    virtual void sound()
+    {
+        cout << "动物在叫" << endl;
+    }
+};
+//即可输出“猫在叫”
+```
+<details> <summary>（点击展开）ChatGPT解释：</summary>
+当函数makeSound被调用时，它使用的是动态绑定（即运行时绑定）机制。由于sound()函数在Animal类中被声明为virtual，编译器会根据实际对象的类型来确定调用的是哪个版本的sound()函数。因此，当你传入Cat对象时，实际上调用的是Cat类中重写的sound()函数，输出的是"猫在叫"。
+
+如果将sound()函数声明为非虚函数（即没有virtual关键字），那么无论你传入什么类型的对象，都会调用Animal类中的sound()函数。因此，不管你传入的是Cat对象还是其他类型的对象，输出都是"动物在叫"。这是因为在编译阶段，函数的地址已经被确定下来，不会根据实际对象类型而改变。
+</details>
+
+\
+\
+总结：
+* 动态多态满足条件：
+    * 1、有继承关系
+    * 2、子类重写父类的虚函数
+* 动态多态的使用：
+    * 父类的指针或引用指向子类对象
