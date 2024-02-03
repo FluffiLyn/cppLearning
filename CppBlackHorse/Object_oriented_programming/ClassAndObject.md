@@ -1930,11 +1930,14 @@ public:
 };
 //即可输出“猫在叫”
 ```
-<details> <summary>（点击展开）ChatGPT解释：</summary>
+<details> <summary>（点击展开）ChatGPT解释</summary>
 当函数makeSound被调用时，它使用的是动态绑定（即运行时绑定）机制。由于sound()函数在Animal类中被声明为virtual，编译器会根据实际对象的类型来确定调用的是哪个版本的sound()函数。因此，当你传入Cat对象时，实际上调用的是Cat类中重写的sound()函数，输出的是"猫在叫"。
 
 如果将sound()函数声明为非虚函数（即没有virtual关键字），那么无论你传入什么类型的对象，都会调用Animal类中的sound()函数。因此，不管你传入的是Cat对象还是其他类型的对象，输出都是"动物在叫"。这是因为在编译阶段，函数的地址已经被确定下来，不会根据实际对象类型而改变。
 </details>
+
+\
+当子类重写父类的虚函数时，子类的虚函数表内部会替换成子类虚函数的地址。
 
 \
 \
@@ -1944,3 +1947,159 @@ public:
     * 2、子类重写父类的虚函数
 * 动态多态的使用：
     * 父类的指针或引用指向子类对象
+
+### 7.2 多态案例一：计算器类
+案例描述：分别利用普通写法和多态技术，设计一个计算器类，实现两个操作数进行运算。
+
+多态的优点：
+* 代码组织结构清晰，可读性强
+* 便于前期和后期的扩展及维护
+
+例1：普通实现
+```c++
+#include <iostream>
+#include <string>
+using namespace std;
+
+class Calculator
+{
+
+public:
+    
+    int getResult(string oper)
+    {
+        if (oper == "+") return m_Num1 + m_Num2;
+        else if (oper == "-") return m_Num1 - m_Num2;
+        else if(oper == "*") return m_Num1 * m_Num2;
+
+    }
+
+    int m_Num1, m_Num2;
+};
+
+void test01()
+{
+    Calculator c;
+    c.m_Num1 = 10;//操作数1
+    c.m_Num2 = 10;//操作数2
+
+    cout << c.m_Num1 << "+" << c.m_Num2 << "=" << c.getResult("+") << endl;
+    cout << c.m_Num1 << "-" << c.m_Num2 << "=" << c.getResult("-") << endl;
+    cout << c.m_Num1 << "*" << c.m_Num2 << "=" << c.getResult("*") << endl;
+}
+
+int main()
+{
+    test01();
+
+    return 0;
+}
+```
+这里，我们没有写除法。如果想扩展新的功能，就要修改getResult()的源码。
+
+在真正的开发中，这不是我们想要的结果。有时候一个方法包含上千行代码，如果直接从核心修改，那么修改量很大。我们可以从外面新增功能。
+
+开发提倡**开闭原则**。
+* 开闭原则：对扩展进行开放，对修改进行关闭。
+
+例2：多态实现
+```c++
+#include <iostream>
+#include <string>
+using namespace std;
+
+//计算器抽象类
+class AbsCalculator
+{
+public:
+
+    virtual int getResult()
+    {
+        return 0;
+    }
+    int m_Num1;
+    int m_Num2;
+
+};
+
+//加法计算器类
+class AddCalculator :public AbsCalculator
+{
+public:
+
+    int getResult()
+    {
+        return m_Num1 + m_Num2;
+    }
+
+};
+
+//减法计算器类
+class SubCalculator :public AbsCalculator
+{
+public:
+
+    int getResult()
+    {
+        return m_Num1 - m_Num2;
+    }
+
+};
+
+//减法计算器类
+class MulCalculator :public AbsCalculator
+{
+public:
+
+    int getResult()
+    {
+        return m_Num1 * m_Num2;
+    }
+
+};
+
+void test01()
+{
+    //多态使用条件：父类指针或引用指向子类对象
+    //这里我们用指针
+
+    //创建加法计算器对象
+    AbsCalculator * abc = new AddCalculator;
+    abc->m_Num1 = 100;
+    abc->m_Num2 = 100;
+    cout << abc->m_Num1 << "+" << abc->m_Num2 << "=" << abc->getResult() << endl;
+    delete abc;
+
+    //减法运算
+    //还是这个父类的指针，只不过改变指向的对象
+    abc = new SubCalculator;
+    abc->m_Num1 = 100;
+    abc->m_Num2 = 100;
+    cout << abc->m_Num1 << "-" << abc->m_Num2 << "=" << abc->getResult() << endl;
+    delete abc;
+
+    abc = new MulCalculator;
+    abc->m_Num1 = 100;
+    abc->m_Num2 = 100;
+    cout << abc->m_Num1 << "*" << abc->m_Num2 << "=" << abc->getResult() << endl;
+}
+
+int main()
+{
+    test01();
+
+    return 0;
+}
+```
+如果要新增减法，我们可以新建减法类，然后重载getResult()函数。
+
+总结：多态的优点：
+* 代码组织结构清晰，可读性强
+* 便于前期和后期的扩展及维护
+
+### 7.3 纯虚函数和抽象类
+在多态中，通常父类中的虚函数的实现是**毫无意义**的，主要功能是调用子类重写的内容，因此我们可以将虚函数改为**纯虚函数**。
+
+纯虚函数语法：`virtual 返回值类型 函数名 (参数列表) = 0;`
+
+当类中有这样的函数，那么这个类也被称为**抽象类**

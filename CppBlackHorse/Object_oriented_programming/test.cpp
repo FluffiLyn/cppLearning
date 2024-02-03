@@ -1,41 +1,81 @@
 #include <iostream>
+#include <string>
 using namespace std;
 
-//动物类
-class Animal
+//计算器抽象类
+class AbsCalculator
 {
 public:
-    virtual void sound()
+
+    virtual int getResult()
     {
-        cout << "动物在叫" << endl;
+        return 0;
     }
+    int m_Num1;
+    int m_Num2;
+
 };
 
-//猫
-class Cat :public Animal
+//加法计算器类
+class AddCalculator :public AbsCalculator
 {
 public:
-    void sound()
+
+    int getResult()
     {
-        cout << "猫在叫" << endl;
+        return m_Num1 + m_Num2;
     }
+
 };
 
-//执行动物“叫唤”的函数
-//地址早绑定，在编译阶段确定函数地址
-//如果想执行“猫在叫”，则这个函数地址需要在运行阶段进行绑定。
-void makeSound(Animal &animal)
+//减法计算器类
+class SubCalculator :public AbsCalculator
 {
-    animal.sound();
-}
+public:
+
+    int getResult()
+    {
+        return m_Num1 - m_Num2;
+    }
+
+};
+
+//减法计算器类
+class MulCalculator :public AbsCalculator
+{
+public:
+
+    int getResult()
+    {
+        return m_Num1 * m_Num2;
+    }
+
+};
 
 void test01()
 {
-    Cat cat;
-    //传入的是Cat类
-    //因为c++允许父子之间的类型转换（父类可转子类，而子类不可转父类）
-    //此时调用的是父类Animal的sound()函数
-    makeSound(cat);
+    //多态使用条件：父类指针或引用指向子类对象
+    //这里我们用指针
+
+    //创建加法计算器对象
+    AbsCalculator * abc = new AddCalculator;
+    abc->m_Num1 = 100;
+    abc->m_Num2 = 100;
+    cout << abc->m_Num1 << "+" << abc->m_Num2 << "=" << abc->getResult() << endl;
+    delete abc;
+
+    //减法运算
+    //还是这个父类的指针，只不过改变指向的对象
+    abc = new SubCalculator;
+    abc->m_Num1 = 100;
+    abc->m_Num2 = 100;
+    cout << abc->m_Num1 << "-" << abc->m_Num2 << "=" << abc->getResult() << endl;
+    delete abc;
+
+    abc = new MulCalculator;
+    abc->m_Num1 = 100;
+    abc->m_Num2 = 100;
+    cout << abc->m_Num1 << "*" << abc->m_Num2 << "=" << abc->getResult() << endl;
 }
 
 int main()
