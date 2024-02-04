@@ -1,81 +1,105 @@
 #include <iostream>
-#include <string>
 using namespace std;
 
-//计算器抽象类
-class AbsCalculator
+class AbstractDrinks
 {
 public:
+    //煮水
+    virtual void Boil() = 0;
 
-    virtual int getResult()
+    //冲泡
+    virtual void Brew() = 0;
+
+    //倒入杯中
+    virtual void pourIn() = 0;
+
+    //加入辅料
+    virtual void putIn() = 0;
+    
+    void makeDrink()
     {
-        return 0;
+        Boil();
+        Brew();
+        pourIn();
+        putIn();
     }
-    int m_Num1;
-    int m_Num2;
-
 };
 
-//加法计算器类
-class AddCalculator :public AbsCalculator
+//制作咖啡
+class Coffee :public AbstractDrinks
 {
 public:
-
-    int getResult()
+    //煮水
+    virtual void Boil()
     {
-        return m_Num1 + m_Num2;
+        cout << "煮农夫山泉" << endl;
     }
 
+    //冲泡
+    virtual void Brew()
+    {
+        cout << "冲泡咖啡" << endl;
+    }
+
+    //倒入杯中
+    virtual void pourIn()
+    {
+        cout << "倒入杯中" << endl;
+    }
+
+    //加入辅料
+    virtual void putIn()
+    {
+        cout << "加入糖和牛奶" << endl;
+    }
 };
 
-//减法计算器类
-class SubCalculator :public AbsCalculator
+//制作茶
+class Tea :public AbstractDrinks
 {
 public:
-
-    int getResult()
+    //煮水
+    virtual void Boil()
     {
-        return m_Num1 - m_Num2;
+        cout << "煮怡宝" << endl;
     }
 
+    //冲泡
+    virtual void Brew()
+    {
+        cout << "冲泡茶叶" << endl;
+    }
+
+    //倒入杯中
+    virtual void pourIn()
+    {
+        cout << "倒入茶杯中" << endl;
+    }
+
+    //加入辅料
+    virtual void putIn()
+    {
+        cout << "加入枸杞" << endl;
+    }
 };
 
-//减法计算器类
-class MulCalculator :public AbsCalculator
+//由于抽象类不能实例化，故这里用指针
+void doWork(AbstractDrinks * abs)
 {
-public:
+    abs->makeDrink();
+    delete abs;
+}
 
-    int getResult()
-    {
-        return m_Num1 * m_Num2;
-    }
-
-};
+//AbstractDrinks * abs = new Coffee
+//自己写项目千万别这样写，除非你想内存泄漏
 
 void test01()
 {
-    //多态使用条件：父类指针或引用指向子类对象
-    //这里我们用指针
+    //制作咖啡
+    doWork(new Coffee);
 
-    //创建加法计算器对象
-    AbsCalculator * abc = new AddCalculator;
-    abc->m_Num1 = 100;
-    abc->m_Num2 = 100;
-    cout << abc->m_Num1 << "+" << abc->m_Num2 << "=" << abc->getResult() << endl;
-    delete abc;
-
-    //减法运算
-    //还是这个父类的指针，只不过改变指向的对象
-    abc = new SubCalculator;
-    abc->m_Num1 = 100;
-    abc->m_Num2 = 100;
-    cout << abc->m_Num1 << "-" << abc->m_Num2 << "=" << abc->getResult() << endl;
-    delete abc;
-
-    abc = new MulCalculator;
-    abc->m_Num1 = 100;
-    abc->m_Num2 = 100;
-    cout << abc->m_Num1 << "*" << abc->m_Num2 << "=" << abc->getResult() << endl;
+    //制作茶
+    doWork(new Tea);
 }
 
 int main()

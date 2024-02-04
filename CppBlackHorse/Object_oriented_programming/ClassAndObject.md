@@ -2103,3 +2103,184 @@ int main()
 纯虚函数语法：`virtual 返回值类型 函数名 (参数列表) = 0;`
 
 当类中有这样的函数，那么这个类也被称为**抽象类**
+
+抽象类的特点：
+* 无法实例化对象
+* 子类必须重写抽象类中的纯虚函数，否则也属于抽象类
+
+例：
+```c++
+#include <iostream>
+using namespace std;
+
+class Base
+{
+public:
+    virtual void func() = 0;
+};
+
+class Son :public Base
+{
+public:
+
+    virtual void func()//有没有virtual都可以
+    {
+        cout << "func()调用" << endl;
+    }
+
+};
+
+void test01()
+{
+    //Base b; new Base;
+    //会报错，因为抽象类不允许实例化对象
+    Son s;
+    Base * base = &s;
+    base->func();
+}
+
+
+
+int main()
+{
+    test01();
+
+    return 0;
+}
+```
+
+### 7.4 多态案例二：制作饮品
+**案例描述：**
+\
+流程为：煮水-冲泡-导入杯中-加入辅料
+
+```c++
+#include <iostream>
+using namespace std;
+
+class AbstractDrinks
+{
+public:
+    //煮水
+    virtual void Boil() = 0;
+
+    //冲泡
+    virtual void Brew() = 0;
+
+    //倒入杯中
+    virtual void pourIn() = 0;
+
+    //加入辅料
+    virtual void putIn() = 0;
+    
+    void makeDrink()
+    {
+        Boil();
+        Brew();
+        pourIn();
+        putIn();
+    }
+};
+
+//制作咖啡
+class Coffee :public AbstractDrinks
+{
+public:
+    //煮水
+    virtual void Boil()
+    {
+        cout << "煮农夫山泉" << endl;
+    }
+
+    //冲泡
+    virtual void Brew()
+    {
+        cout << "冲泡咖啡" << endl;
+    }
+
+    //倒入杯中
+    virtual void pourIn()
+    {
+        cout << "倒入杯中" << endl;
+    }
+
+    //加入辅料
+    virtual void putIn()
+    {
+        cout << "加入糖和牛奶" << endl;
+    }
+};
+
+//制作茶
+class Tea :public AbstractDrinks
+{
+public:
+    //煮水
+    virtual void Boil()
+    {
+        cout << "煮怡宝" << endl;
+    }
+
+    //冲泡
+    virtual void Brew()
+    {
+        cout << "冲泡茶叶" << endl;
+    }
+
+    //倒入杯中
+    virtual void pourIn()
+    {
+        cout << "倒入茶杯中" << endl;
+    }
+
+    //加入辅料
+    virtual void putIn()
+    {
+        cout << "加入枸杞" << endl;
+    }
+};
+
+//由于抽象类不能实例化，故这里用指针
+void doWork(AbstractDrinks * abs)
+{
+    abs->makeDrink();
+    delete abs;
+}
+
+//AbstractDrinks * abs = new Coffee
+//自己写项目千万别像下面这样写new，除非你想内存泄漏
+void test01()
+{
+    //制作咖啡
+    doWork(new Coffee);
+
+    //制作茶
+    doWork(new Tea);
+}
+
+int main()
+{
+    test01();
+
+    return 0;
+}
+```
+
+### 7.5 虚析构和纯虚析构
+多态使用时，如果子类有属性开辟到堆区，那么父类指针在释放时无法调用到子类的析构代码。
+
+解决方法：将父类中的析构函数改为**虚析构**或**纯虚析构**
+\
+\
+\
+\
+虚析构语法：`virtual ~类名(){}`
+
+纯虚析构语法：`virtual ~类名() = 0`
+
+二者的共性：
+* 可以解决父类指针释放子类对象
+* 都需要有具体的函数实现
+
+二者的区别：
+* 纯虚析构所属类为抽象类
