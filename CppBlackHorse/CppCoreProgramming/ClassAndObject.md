@@ -33,7 +33,7 @@ const double PI = 3.14;//定义圆周率
 
 class Circle//类名一般首字母大写，增加可读性
 {
-    public:
+public:
     int m_r;//属性：半径
 
     double Circumference()//行为（或成员函数）：获取圆的周长
@@ -249,18 +249,18 @@ void isInCircle(Circle &c, Point &p)
 {
      
     //计算两点之间距离的平方
-    int dSqrt =
+    int dSq =
     pow((c.getCenter().getX() - p.getX()), 2) + 
     pow((c.getCenter().getY() - p.getY()), 2);
 
     //计算半径的平方
-    int rSqrt = pow(c.getR(), 2);
+    int rSq = pow(c.getR(), 2);
 
-    if(dSqrt == rSqrt)
+    if(dSq == rSq)
     {
         cout << "点在圆上" << endl;
     }
-    else if(dSqrt > rSqrt)
+    else if(dSq > rSq)
     {
         cout << "点在圆外" << endl;
     }
@@ -2280,7 +2280,80 @@ int main()
 
 二者的共性：
 * 可以解决父类指针释放子类对象
-* 都需要有具体的函数实现
+* **都需要**有具体的函数实现（纯虚析构要在类内声明，类外实现）
 
 二者的区别：
-* 纯虚析构所属类为抽象类
+* **纯虚析构**所属类为**抽象类**
+
+例：
+```c++
+#include <iostream>
+#include <string>
+using namespace std;
+
+class Animal
+{
+public:
+
+    Animal()
+    {
+        cout << "Animal的构造函数调用" << endl;
+    }
+
+    virtual ~Animal()
+    {
+        cout << "Animal的析构函数调用" << endl;
+    }
+    virtual void speak() = 0;
+};
+
+class Cat :public Animal
+{
+public:
+
+    Cat(string name)
+    {
+        cout << "Cat的构造函数调用" << endl;
+        m_Name = new string(name);
+    }
+    
+    ~Cat()
+    {
+        if(m_Name != NULL)
+        {
+            cout << "Cat的析构函数调用" << endl;
+            delete m_Name;
+            m_Name = NULL;
+        }
+    }
+
+    virtual void speak()
+    {
+        cout << *m_Name << "猫在说话" << endl;
+    }
+
+    string *m_Name;
+};
+
+void test01()
+{
+    Animal * animal = new Cat("Tom");
+    animal->speak();
+    //父类指针在析构的时候，不会调用子类的析构函数
+    //导致子类如果有堆区属性，会出现内存泄漏
+    //所以我们要在Animal类的析构函数前加virtual，使其变为虚析构
+    //如果不理解，可以尝试把virtual去掉，看运行结果有什么不同
+    delete animal;
+}
+
+int main()
+{
+    test01();
+
+    return 0;
+}
+```
+总结：
+1. 虚析构或纯虚析构就是用于解决通过父类指针释放子类对象的问题的
+2. 如果子类中没有堆区数据，可以不写为虚析构或纯虚析构
+3. 拥有纯虚析构函数的类也属于抽象类
