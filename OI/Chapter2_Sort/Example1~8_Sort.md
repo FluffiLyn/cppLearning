@@ -143,6 +143,6 @@ int main()
     return 0;
 }
 ```
-![动图演示](https://pic3.zhimg.com/v2-91b76e8e4dab9b0cad9a017d7dd431e2_b.webp)
+![动图演示](https://pic3.zhimg.com/v2-91b76e8e4dab9b0cad9a017d7dd431e2_b.webp "插入排序动图演示")
 
 ## 4. 桶排序
