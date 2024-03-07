@@ -52,8 +52,26 @@ for (int i = 0; i < 10; ++i)
 }
 
 //2、利用区间方式构造
-//将另一个数组的一个区间"复制"进来
+//将另一个向量的一个区间"复制"进来
 vector<int> v2(v1.begin(), v1.end());
 
+//3、n个element方式构造
+vector<int> v3(10,100);//10个100
 
+//4、拷贝构造
+vector<int> v4(v3);
+```
+
+### 2.2.2 赋值操作
+```c++
+//1、直接赋值
+vector<int> v2;
+v2 = v1;
+
+//2、assign赋值
+vector<int> v3;
+v3.assign(v1.begin(), v1.end());
+
+//3、n个element赋值
+vector<int> v4;
 ```

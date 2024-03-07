@@ -3,12 +3,11 @@
 using namespace std;
 int main()
 {
-    vector<int> vec(3,0);
+    vector<int> v1;
+for (int i = 0; i < 10; ++i)
+{
+    v1.push_back(i);
+}
+vector<int> v2(v1.begin(), v1.end());
 
-    vec.insert(vec.begin()+2,1);
-    for (int i: vec)
-    {
-        cout << vec.at(i);
-    }
-    return 0;
 }
