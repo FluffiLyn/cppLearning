@@ -449,5 +449,107 @@ int main()
 }
 ```
 
+### 2. 计数排序（Counting Sort）
+基本思想：将输入的数据值转化为键存储在额外开辟的数组空间中。计数排序要求输入的数据必须是**有确定范围**的整数。
+
+步骤：
+1. 找出待排序的数组中最大和最小的元素；
+2. 统计数组中每个值为i的元素出现的次数，存入数组bucket的第i项；
+3. 对所有的计数累加（从bucket中的第一个元素开始，每一项和前一项相加）；
+4. 反向填充目标数组：将每个元素i放在新数组的第bucket(i)项，每放一个元素就将bucket(i)减去1。
+
+代码：
+```c++
+#include <iostream>
+using namespace std;
+
+void countingSort(int arr[],int max_Value, int min_Value, int n, int length)
+{
+    int count[length] = {0};
+    int result[n] = {0};
+
+    // 统计每个元素出现的次数
+    for (int i = 0; i < n; i++)
+    {
+        count[arr[i] - min_Value]++;
+    }
+
+    // 累计计数，计算每个元素排序后在数组中的位置
+    // 即将每个元素的 计数值 加上前一个元素的计数值，确保相同元素的相对顺序不变。
+
+    for (int j = 0; j < length - 1; j++)
+    {
+        count[j + 1] += count[j];
+    }
+    
+    // 根据累计计数数组将元素放置到正确的位置
+    for (int k = n - 1; k >= 0; k--)
+    {
+        int index = count[arr[k] - min_Value] - 1;
+        result[index] = arr[k];
+        count[arr[k] - min_Value]--;
+    }
+
+    
+    for (int i = 0; i < n; i++)
+    {
+        cout << result[i] << " ";
+    }
+}
+
+int main()
+{
+    int n, max_Value, min_Value;
+    cin >> n;
+
+    int arr[n] = {0};
+    for (int i = 0; i < n; i++)
+    {
+        cin >> arr[i];
+    }
+
+    // 获取最大和最小值。数组长度就是最大减去最小再加一（防止max=min）
+    max_Value = arr[0];
+    min_Value = arr[0];
+    for (int i = 0; i < n; i++)
+    {
+        if (arr[i] > max_Value)
+        {
+            max_Value = arr[i];
+        }
+        if (arr[i] < min_Value)
+        {
+            min_Value = arr[i];
+        }
+    }
+
+    int length = max_Value - min_Value + 1;
+
+    countingSort(arr, max_Value, min_Value, n, length);
+}
+
+    
+
+```
+注：
+* count[] 数组在累计计数后存储的是每个值（基于 min_Value 的偏移）应当放置的***下一个元素***的位置。例如，如果 count[i] 的值是5，则表示从数组开始到这个位置，共有5个不大于 i + min_Value 的元素。
+
+* 当我们想要将 arr[k] 放入结果数组时，我们需要找到它之前有多少个比它小或相等的元素。由于 count[] 存储的是***“下一个”***位置，所以我们需要访问的是当前位置之前的累计计数值，即 count[arr[k] - min_Value] - 1。
+
+### 3. 基数排序
+基本思想：将整数按位数切割成不同的数字，然后按每个位数分别比较。基数排序的方式可以由键值的最右边开始，也可以由键值的最左边开始。
+
+步骤：
+* 将所有待比较数值（正整数）统一为同样的数位长度，数位较短的数前面补零。
+* 从最低位开始，依次进行一次排序。
+* 这样从最低位排序一直到最高位排序完成以后, 数列就变成一个有序序列。
+
+代码：
+```c++
+
+```
+
+参考：https://zhuanlan.zhihu.com/p/126116878
+
 # 附：
 ![排序总览](https://img-blog.csdnimg.cn/2021032110220898.png?"排序总览")

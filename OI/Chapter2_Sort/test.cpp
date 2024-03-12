@@ -1,70 +1,70 @@
 #include <iostream>
 using namespace std;
 
-const int N = 100010;
-
-// Merge函数用于合并两个有序子数组
-
-void Merge(int sourceArr[],int tempArr[], int startIndex, int midIndex, int endIndex)
+void countingSort(int arr[],int max_Value, int min_Value, int n, int length)
 {
-    // 初始化三个“指针”，i是左半部分起始，j是右半部分起始，k是临时数组的当前插入位置
-    int i = startIndex, j=midIndex+1, k = startIndex;
+    int * count = new int[length];
+    count = {0};
+    int result[n] = {0};
 
-    // 当左右两个子数组的指针都没有达到各自末尾时
-    while(i <= midIndex && j <= endIndex) 
+    // 统计每个元素出现的次数
+    for (int i = 0; i < n; i++)
     {
-        // 右半部分当前元素小于左半部分当前元素，则将右半部分当前元素放入临时数组并移动指针
-        if(sourceArr[i] > sourceArr[j])
-            tempArr[k++] = sourceArr[j++];
-        // 否则将左半部分当前元素放入临时数组并移动指针
-        else
-            tempArr[k++] = sourceArr[i++];
+        count[arr[i] - min_Value]++;
     }
 
-    // 将剩余的元素依次插入临时数组
-    while(i <= midIndex)
-        tempArr[k++] = sourceArr[i++];
-    while(j <= endIndex)
-        tempArr[k++] = sourceArr[j++];
+    // 累计计数，计算每个元素排序后在数组中的位置
+    // 即将每个元素的 计数值 加上前一个元素的计数值，确保相同元素的相对顺序不变。
 
-    // 将临时数组的有序元素复制回原数组
-    for(i=startIndex; i<=endIndex; i++)
-        sourceArr[i] = tempArr[i];
-}
- 
-//内部使用递归
-void MergeSort(int sourceArr[], int tempArr[], int startIndex, int endIndex) 
-{
-    int midIndex;
-    if(startIndex < endIndex) 
+    for (int j = 0; j < length - 1; j++)
     {
-        midIndex = startIndex + (endIndex-startIndex) / 2;//避免溢出int
-        // 分
-        MergeSort(sourceArr, tempArr, startIndex, midIndex);
-        MergeSort(sourceArr, tempArr, midIndex+1, endIndex);
-        // 治
-        Merge(sourceArr, tempArr, startIndex, midIndex, endIndex);
+        count[j + 1] += count[j];
+    }
+    
+    // 根据累计计数数组将元素放置到正确的位置
+    for (int k = n - 1; k >= 0; k--)
+    {
+        int index = count[arr[k] - min_Value] - 1;
+        result[index] = arr[k];
+        count[arr[k] - min_Value]--;
+    }
+
+    
+    for (int i = 0; i < n; i++)
+    {
+        cout << result[i] << " ";
     }
 }
-
 
 int main()
 {
-    int n, a[N] = {0}, temp[N] = {0};
-    
+    int n, max_Value, min_Value;
     cin >> n;
+
+    int arr[n] = {0};
     for (int i = 0; i < n; i++)
     {
-        cin >> a[i];
+        cin >> arr[i];
     }
 
-    MergeSort(a, temp, 0, n - 1);
+    // 获取最大和最小值。数组长度就是最大减去最小再加一（防止max=min）
+    max_Value = arr[0];
+    min_Value = arr[0];
     for (int i = 0; i < n; i++)
     {
-        cout << a[i] << " ";
-    } 
+        if (arr[i] > max_Value)
+        {
+            max_Value = arr[i];
+        }
+        if (arr[i] < min_Value)
+        {
+            min_Value = arr[i];
+        }
+    }
 
-    return 0;
+    int length = max_Value - min_Value + 1;
+
+    countingSort(arr, max_Value, min_Value, n, length);
 }
 
-
+    
