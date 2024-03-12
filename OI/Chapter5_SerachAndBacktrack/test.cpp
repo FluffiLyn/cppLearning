@@ -2,56 +2,52 @@
 #include <cmath>
 using namespace std;
 
-//将数组设为21个是想让数组下标能够对应数字1～20
-bool b[21] = {0};//默认为false
-int total = 0, a[21] = {0};
+//此处的a[100][3]不是映射棋盘上所有位置的状态，而是记录搜索过程中马走过的路径信息
+//a[i][1]是第i步时的横坐标
+//a[i][2]是第i步时的纵坐标
+//0被弃用
+int a[100][3] = {0}, count;
+//移动规则
+int x[4] = {1,2,2,1};
+int y[4] = {2,1,-1,-2};
 
-int search(int);
-void printResult();
-bool pd(int, int);//判断素数
+void search(int);
+void printResult(int);
 
 int main()
 {
-    search(1);
-    cout << total << endl;
+    //将位置初始化，第一步在（0,0）处
+    a[1][1] = 0; a[1][2] = 0;
+    search(2);
 
     return 0;
 }
 
-int search(int t)
+void search(int i)
 {
-    int i = 1;
-    for (i = 1; i <= 20; i++)//有20个数可选
+    for (int j = 0; j <= 3; j++)
     {
-        if (pd(a[t - 1],i) && !(b[i]))//判断与前一个数是否构成素数并且该数字是否可用
+        //判断马是否越界
+        if ((a[i-1][1] + y[j] >= 0) && (a[i-1][1] + y[j] <= 4)
+        && (a[i-1][2] + x[j] >= 0) && (a[i-1][2] + x[j] <= 8))
         {
-            a[t] = i;
-            b[i] = true;
-            if(t == 20)
-            {
-                if(pd(a[20],a[1])) printResult();
-            }    
-            else search(t + 1);
-            b[i] = false;
-        }
+            //保存当前马的位置   
+            a[i][1] = a[i-1][1] + y[j];          
+            a[i][2] = a[i-1][2] + x[j];
+
+            if (a[i][1] == 4 && a[i][2] == 8) printResult(i);
+                else search(i+1);
+        }   
+    } 
+}
+
+void printResult(int input)
+{
+    count++;
+    cout << count << ": ";
+    for (int i = 1; i <= input - 1; i++)
+    {
+        cout << "(" << a[i][1] << "," << a[i][2] << ")" << "-->";
     }
-}
-
-void printResult()
-{
-    total++;
-    cout << "<" << total << ">";
-    for (int j = 1; j <= 20; j++)
-        cout << a[j] << " ";
-    cout << endl;
-}
-
-//判断两数之和是否为素数
-bool pd(int x, int y)
-{
-    int k = 2,sum = x + y;
-    while (k <= sqrt(sum) && sum % k != 0) k++;
-    
-    if (k > sqrt(sum)) return true;
-    else return false;
+    cout << "(4,8)" << endl;
 }
