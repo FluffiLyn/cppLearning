@@ -212,3 +212,63 @@ void printResult(int input)
     cout << "(4,8)" << endl;
 }
 ```
+
+## 5.4 选书
+学校放寒假时，信息学竞赛辅导老师有A，B，C，D，E五本书，要分给参加培训的张、王、刘、孙、李五位同学，每人只能选一本书。老师事先让每个人将自己喜欢的书填写在如下的表格中。然后根据他们填写的表来分配书本，希望设计一个程序帮助老师求出所有可能的分配方案，使每个学生都满意。
+![图片](https://img-blog.csdnimg.cn/img_convert/782ad3e40d8dd9ff66da41a50e0ef40f.png) 
+
+先用穷举法，求出五本书的所有全排列5!=120，然后在这里面删去不符合题意的解，剩余的即为题解。
+
+```c++
+#include <iostream>
+#include <cmath>
+using namespace std;
+
+int book[6], count = 0;
+bool flag[6], like[6][6] = {{0,0,0,0,0,0},{0,0,0,1,1,0},{0,1,1,0,0,1},
+                                    {0,0,1,1,0,0},{0,0,0,0,1,0},{0,0,1,0,0,1}};
+void search(int);
+void printResult();
+
+int main()
+{
+    for (int i = 1; i <= 5; i++)
+        flag[i] = true;
+    search(1);
+}
+
+void search(int i)
+{
+    for (int j = 1; j <= 5; j++)
+    {
+        if (flag[j] && like[i][j])
+        {
+            flag[j] = false;
+            book[i] = j;
+            if (i == 5) printResult();
+                else search(i + 1); 
+            flag[j] = true;
+            book[i] = 0;
+        }
+    }    
+}
+
+void printResult()
+{
+    count++;
+    cout << "Answer" << count << ":\n";
+    for (int i = 1; i <= 5; i++)
+    {
+        cout << i << ": " << char(64+book[i]) << endl;
+    }
+}
+```
+输出：
+```
+Answer1:
+1: C
+2: A
+3: B
+4: D
+5: E
+```
