@@ -119,3 +119,165 @@ int main()
     return 0;
 }
 ```
+
+### 2.2.4 容量和大小
+容量是capacity()，大小是size()。你可以用resize()来改变大小，但是要先用empty()来判断容器是否为空。
+
+对于vector，它的capacity是预留的空间大小，不一定等于元素个数。当元素存储达到预留空间上限时，会触发扩容。具体扩容的量取决于不同触发扩容的方式。
+
+而size就是元素的个数。
+```c++
+#include <iostream>
+#include <vector>
+using namespace std;
+int main()
+{
+    vector<int> v;
+
+    for (int i=0;i<10;i++)
+    {
+        v.push_back(i);
+    }
+
+    //输出所有内容
+    for (vector<int>::iterator it = v.begin(); it != v.end(); it++)
+    {
+        cout << *it << " ";
+    }
+
+    cout << endl;
+
+    if(v.empty())
+    {
+        cout << "The vector is empty." << endl;
+    }
+    else
+    {
+        cout << "The capacity is: " << v.capacity() << endl;
+        cout << "The size is: " << v.size() << endl;
+    }
+
+    return 0;
+}
+```
+输出结果：
+```
+0 1 2 3 4 5 6 7 8 9 
+The capacity is: 16
+The size is: 10
+```
+
+在实际应用时，我们应该为vector预先设置容量，尽量避免多次触发扩容。
+
+## 2.3 deque（双端队列）
+可以对deque两端的数据进行操作。它没有capacity属性，因此它不需要扩容，也因此没有空间保留（reverse）功能。
+
+```c++
+#include <deque>
+```
+
+### 2.3.1 构造函数
+与vector类似。
+```c++
+deque<int> d1;
+for (int i = 0; i < 10; i++)
+{
+    d1.push_back(i);
+}
+
+deque<int> d2(d1);
+
+deque<int> d3(size);
+
+deque<int> d4(first, last);
+
+deque<int> d5 = d4;
+
+```
+### 2.3.2 赋值操作
+### 2.3.3 大小
+
+### 2.3.4 插入和删除
+插入操作    
+```c++
+deque<int> d;
+
+d.push_back(10);
+d.push_back(20);//尾部插入
+
+d.push_front(100);//头部插入
+
+d.pop_back();//尾部删除
+d.pop_front();//头部删除
+```
+
+删除操作
+```c++
+deque<int> d;
+d.push_back(10);
+d.push_back(20);
+
+d.push_front(100);
+d.push_front(200);
+
+
+deque<int>::iterator it = d.begin();
+it++;
+d.erase(it);
+printDeque(d);//自定义输出
+d.erase(d.begin(),d.end());
+
+d.clear();
+```
+
+### 2.3.5 数据存取
+此处主要是区别[]方式和at()函数的访问情况。
+
+使用at()更加安全，具体会在后面的Array中提及。
+
+```c++
+#include <iostream>
+#include <deque>
+using namespace std;
+int main()
+{
+    deque<int> d(6);
+
+    for (int i = 0; i < 6; i++)
+    {
+        d.at(i) = 100 * (i + 1);
+    }
+
+    //通过[]访问
+    for (int i = 0; i < d.size(); i++)
+    {
+        cout << d[i] << " ";
+    }
+    cout << endl;
+    
+    //通过at()访问
+    for (int i = 0; i < d.size(); i++)
+    {
+        cout << d.at(i) << " ";
+    }
+
+    return 0;
+}
+```
+
+## 2.4 list(列表/双向循环列表)
+```
+#include <list>
+```
+
+## 2.5 forward_list（单向链表）
+
+## 2.6 array（数组）
+与普通数组不同，stl里的数组多了很多新方法，例如可以用at()来访问数组内容。
+
+at()比[]访问更加安全，这是因为在访问越界时，at会抛出异常，但是 []会使程序崩溃。
+
+# 3.关联式容器
+关联式容器是指数据是键值对的格式。它们没有头尾，所以不会有pushback,pushfront之类的操作。
+## 3.1 set/multiset（集合/多重集合）
+对于集合容器，它在使用insert()插入之后会**自行排序**，默认是升序，但不可重复插入，就像数学上的集合。它们是简单关联容器，其参数类型只有一个，所以它的元素既是键值（key）又是实值（value）。
