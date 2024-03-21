@@ -296,10 +296,10 @@ class set
 这里定义了一个**类模板**，包括三个参数类型：变量类型、排序方式和内存分配器。
 排序方式可以用仿函数来修改。见cppLearning/CppCoreProgramming/ClassAndObject.md的仿函数一栏。
 
-## 3.2 常用操作
+### 3.1.1 常用操作
 构造和赋值、大小和交换、插入和删除等操作，均予上述容器类似。
 
-### 3.2.1 查找和统计操作
+### 3.1.2 查找和统计操作
 可以用find()函数访问相应的元素，可以用count()函数去统计相关元素在容器中出现了几次。
 使用方法如下：
 ```c++
@@ -347,16 +347,19 @@ int main()
 }
 ```
 
-## 3.3 pair（对组）
+### 3.1.3 set和multiset的区别
+在 multiset 中，元素按照值的大小进行排序，并且**可以有重复的值**。这使得 multiset 成为一种非常适合需要存储重复元素并保持有序的情况下使用的数据结构
+
+## 3.2 pair（对组）
 pair用于存储一对值。这对值可以是不同类型的数据，例如两个整数、一个整数和一个字符串等。std::pair 提供了一个简单的方法来将两个值组合在一起，方便进行处理和传递。
-### 3.3.1 构造函数
+### 3.2.1 构造函数
 ```c++
 pair<int, double> p1;
 pair<int, double> p2(1,2,4);
 pair<int, double> p3(p2);
 ```
 
-### 3.3.2 访问元素
+### 3.2.2 访问元素
 由于pair只有一对值，我们可以用first和second来访问。
 ```c++
 pair<int, double> p1;
@@ -365,7 +368,7 @@ p1.second = 2.5;
 cout << p1.first << " " << p1.second << endl;
 ```
 
-### 3.3.3 赋值
+### 3.2.3 赋值
 (1)用make_pair
 ```c++
 pair<int, double> p1;
@@ -378,8 +381,152 @@ pair<int, double> p1(1, 1.2);
 pair<int, double> p2 = p1;
 ```
 
-### 3.3.4 应用
+### 3.2.4 应用
 对组可以放入queue（队列）中，配合广度优先搜索（BFS）来解题。
 
 例如：用pair充当结构体保存坐标(x,y)。
 
+## 3.3 map/multimap（映射/多重映射）
+map的所有元素都是pair，同时拥有键值（key）和实值（value），所有元素都会根据键值来自动排序。
+当对它的容器元素进行新增操作或者删除操作时，操作之前的所有迭代器在操作之后依旧有效。
+
+### 3.3.1 头文件
+`#include <map>`
+
+在头文件中，map是这样定义的：
+```c++
+template<typename _Key, typename _Tp, typename _Cmp = std::less<_Key>>
+  using map
+= std::map<_Key, _Tp, _Cmp,
+   polymorphic_allocator<pair<const _Key, _Tp>>>;
+//C++17
+```
+这是一个模板声明，定义了三个模板参数 _Key、_Tp 和 _Cmp，其中 _Key 是键的类型，_Tp 是值的类型，_Cmp 是比较函数对象的类型，默认值为 std::less<_Key>, 也就是说，默认是升序排序。
+
+using map = std::map<_Key, _Tp, _Cmp, polymorphic_allocator<pair<const _Key, _Tp>>>;：这里定义了一个别名模板 map，它实际上是 std::map 的一个实例化版本，使用了自定义的内存资源管理器 polymorphic_allocator 来进行内存分配。具体地：
+
+_Key 和 _Tp 分别作为键和值的类型参数传递给 std::map。
+
+_Cmp 作为比较函数对象的类型参数传递给 std::map。
+
+polymorphic_allocator<pair<const _Key, _Tp>> 指定了使用内存资源管理器来分配键值对 (pair<const _Key, _Tp>) 的内存。
+
+### 3.3.2 常用操作
+（1）构造和赋值
+
+对于map容器，要使用pair来进行insert。
+
+```c++
+#include <iostream>
+#include <map>
+#include <string>
+using namespace std;
+
+int main() {
+    // 构造一个空的 map
+    map<string, int> myMap;
+
+    // 插入键值对
+    myMap["Alice"] = 25;
+    myMap["Bob"] = 30;
+    myMap["Charlie"] = 27;
+
+    // 使用 insert 函数插入键值对
+    myMap.insert(make_pair("David", 35));
+
+    // 输出 map 中的键值对
+    for (pair<const string, int>& pair : myMap) {
+        cout << pair.first << " is " << pair.second << " years old." << endl;
+    }
+
+    // 使用迭代器遍历 map
+    map<string, int>::iterator it;
+    for (it = myMap.begin(); it != myMap.end(); ++it) {
+        cout << it->first << " is " << it->second << " years old." << endl;
+    }
+
+    // 赋值操作
+    map<string, int> anotherMap;
+    anotherMap = myMap;  // 使用赋值操作符将一个 map 赋值给另一个 map
+
+    return 0;
+}
+```
+
+（2）大小和交换
+```c++
+#include <iostream>
+#include <map>
+using namespace std;
+
+int main() 
+{
+    map<string, int> myMap;
+
+    // 向 map 中插入一些元素
+    myMap["Alice"] = 25;
+    myMap["Bob"] = 30;
+    myMap["Charlie"] = 27;
+
+    // 获取 map 的大小
+    cout << "Map 的大小为：" << myMap.size() << endl;
+
+    return 0;
+}
+```
+输出结果：
+```
+Map 的大小为：3
+```
+这说明size获取的是map的键值对数量。
+
+（3）查找和统计
+
+在map中，find函数可通过键值来查找相应的实值，如myMap.find("Alice")返回25。对于map，count函数返回的值一定是0或1；
+对于multimap则可能大于1。
+
+### 3.3.3 插入和删除
+插入的方式记住前三种即可。
+
+```c++
+#include <iostream>
+#include <map>
+using namespace std;
+
+int main() 
+{
+    map<int, int> m1;
+    
+    //插入
+    //1
+    m1.insert(pair<int, int>(1,10));
+
+    //2
+    m1.insert(make_pair(2,20));
+
+    //3
+    m1.insert(map<int, int>::value_type(3,30));
+
+    //4
+    //不建议，如果该键已经存在，它会直接覆盖原有的值。这可能会导致意外的数据丢失，特别是在不确定键是否存在的情况下。
+    m1[4] = 40;
+
+    //当你用[]访问不存在的键时，它会新建一个键值对，实值的默认值是0，导致意外的元素插入。
+    cout << m1[5];
+
+    //删除
+    //1、用begin()删除
+    m1.erase(m1.begin());
+    
+    //2、根据键值删除
+    m1.erase(2);
+
+    return 0;
+}
+```
+insert会返回一个 pair 类型的值，指示插入是否成功，从而可以根据返回值来判断是否已存在相同的键，增强安全性。
+
+### 3.3.4 map和multimap的区别
+与 std::map 相比，std::multimap 允许键值对的键重复，因此它可以存储多个具有相同键的值。
+
+# 4.容器适配器
