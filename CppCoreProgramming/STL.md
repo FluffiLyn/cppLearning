@@ -281,3 +281,105 @@ at()比[]访问更加安全，这是因为在访问越界时，at会抛出异常
 关联式容器是指数据是键值对的格式。它们没有头尾，所以不会有pushback,pushfront之类的操作。
 ## 3.1 set/multiset（集合/多重集合）
 对于集合容器，它在使用insert()插入之后会**自行排序**，默认是升序，但不可重复插入，就像数学上的集合。它们是简单关联容器，其参数类型只有一个，所以它的元素既是键值（key）又是实值（value）。
+ 
+引用方法：`#include <set>`（set和multiset都是用这个）
+
+在头文件中的定义：
+```c++
+template<typename _Key, typename _Compare = std::less<_Key>,
+	typename _Alloc = std::allocator<_Key> >
+class set
+{
+    //...
+};
+```
+这里定义了一个**类模板**，包括三个参数类型：变量类型、排序方式和内存分配器。
+排序方式可以用仿函数来修改。见cppLearning/CppCoreProgramming/ClassAndObject.md的仿函数一栏。
+
+## 3.2 常用操作
+构造和赋值、大小和交换、插入和删除等操作，均予上述容器类似。
+
+### 3.2.1 查找和统计操作
+可以用find()函数访问相应的元素，可以用count()函数去统计相关元素在容器中出现了几次。
+使用方法如下：
+```c++
+iterator find(const key_type &key);
+size_type count(const key_type &key);
+```
+示例：
+```c++
+#include <iostream>
+#include <set>
+using namespace std;
+
+int main()
+{
+    set<int> s1;
+
+    for (int i = 7; i >= 1; i--)
+    {
+        s1.insert(i);
+    }
+
+    for (int i : s1)
+    {
+        cout << i << " ";//输出仍为正序
+    }
+
+    cout << endl;
+    //1、查找
+    //end()返回指向集合尾部元素之后的位置的指针，表示寻找的元素不存在。
+    //也就是说集合的末尾并不是最大的元素
+    set<int>::iterator pos = s1.find(3);
+    if (pos != s1.end())
+    {
+        cout << "找到" << *pos << "了" << endl;
+    } 
+    else 
+    {
+        cout << "没找到" << endl;
+    }
+
+    //2、统计
+    //由于集合元素的互异性，即使多次添加同一个数据，使用count()统计的结果仍然是1。
+
+    return 0;
+}
+```
+
+## 3.3 pair（对组）
+pair用于存储一对值。这对值可以是不同类型的数据，例如两个整数、一个整数和一个字符串等。std::pair 提供了一个简单的方法来将两个值组合在一起，方便进行处理和传递。
+### 3.3.1 构造函数
+```c++
+pair<int, double> p1;
+pair<int, double> p2(1,2,4);
+pair<int, double> p3(p2);
+```
+
+### 3.3.2 访问元素
+由于pair只有一对值，我们可以用first和second来访问。
+```c++
+pair<int, double> p1;
+p1.first = 1;
+p1.second = 2.5;
+cout << p1.first << " " << p1.second << endl;
+```
+
+### 3.3.3 赋值
+(1)用make_pair
+```c++
+pair<int, double> p1;
+p1 = make_pair(1,1.2);
+```
+
+(2)变量间赋值
+```c++
+pair<int, double> p1(1, 1.2);
+pair<int, double> p2 = p1;
+```
+
+### 3.3.4 应用
+对组可以放入queue（队列）中，配合广度优先搜索（BFS）来解题。
+
+例如：用pair充当结构体保存坐标(x,y)。
+

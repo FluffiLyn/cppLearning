@@ -1485,6 +1485,43 @@ cout << MyPrint()("Hello world!");
 ```
 这个被称为匿名函数对象，执行完这一行后就会被销毁。
 
+再看一个例子：用仿函数使set元素降序输出
+```c++
+#include <iostream>
+#include <set>
+using namespace std;
+
+class MyCompare
+{
+public:
+    bool operator()(int v1, int v2)
+    {
+        return v1 > v2;
+    }
+};
+
+int main()
+{
+    set<int, MyCompare> s1;
+
+    for (int i = 10; i <= 70; i += 10)
+    {
+        s1.insert(i);
+    }
+
+    for (set<int, MyCompare>::iterator it = s1.begin(); it != s1.end(); it++)
+    {
+        cout << *it << " ";
+    }
+
+    cout<< endl;
+
+    return 0;
+}
+```
+在MyCompare类中重载了()，往set中传入MyCompare类型参数，改变了set的排序方式。
+
+
 ## 6. 继承
 就像生物学的物种分类一样，有些类与类之间存在一些关系：下级成员拥有上一级的共性，还有自己的特性。
 
