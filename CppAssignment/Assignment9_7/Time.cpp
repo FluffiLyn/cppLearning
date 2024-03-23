@@ -90,7 +90,9 @@ int main()
     {
         if (t1.getHour() % 12 == 1 && t1.getMinute() == 1)
             break;
+        
         t1.setTick((t1.getTick() + 1) % 1000); 
+        
         if (t1.getTick() == 0) 
         {            
             t1.printStandard();
