@@ -85,22 +85,22 @@ void Time::setTick(int t)
 void Time::ticking()
 {
     if (getTick() < 999)
-        setTick((getTick() + 1) % 1000);
+        setTick(getTick() + 1);
     else
     {
         setTick(0);
         if (getSecond() < 59)
-            setSecond((getSecond() + 1) % 60);
+            setSecond(getSecond() + 1);
         else
         {
             setSecond(0);
             if (getMinute() < 59)
-                setMinute((getMinute() + 1) % 60);
+                setMinute(getMinute() + 1);
             else
             {
                 setMinute(0);
                 if (getHour() < 23)
-                    setHour((getHour() + 1) % 24);
+                    setHour(getHour() + 1);
                 else
                 {
                     setHour(0);
@@ -189,6 +189,7 @@ unsigned int Date::getYear() const
     return year;
 }
 
+//为省力，此处不使用getter
 void Date::nextDay()
 {
     //是否跨年
