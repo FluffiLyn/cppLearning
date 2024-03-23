@@ -5,8 +5,8 @@
 using namespace std;
 int main()
 {
-
-    DateAndTime dt1(3, 23, 2024, 20, 46, 30, 0);
+    cout << "Test incrementing to the next day" << endl;
+    DateAndTime dt1(3, 23, 2024, 23, 59, 50, 0);
     for (int i = 0; i < 100000; i++)
     {
         if (dt1.getTick() == 0)
