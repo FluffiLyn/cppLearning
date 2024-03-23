@@ -149,30 +149,35 @@ void Time::printUniversal()
 //Date.h
 Date::Date(int m, int d, int y):month(m), day(d),year(y)
 {
-    if (m < 1 || m > 12)
-    {
-        cout << "Invalid month value. Month must be between 1 and 12." << endl;
-        month = 1; 
-    }
-    else
-        month = m;
+    setMonth(month);
+    setDay(day);
+    setYear(year);
+}
 
-    if (d < 1 || d > 31)
-    {
-        cout << "Invalid day value. Day must be between 1 and 31." << endl;
-        day = 1; 
-    }
+void Date::setDay(int d)
+{
+    if (d < 1 || d > 31) 
+        throw invalid_argument("Invalid day value. Day must be between 1 and 31.");
     else 
         day = d;
+}
 
+void Date::setMonth(int m)
+{
+    if (m < 1 || m > 12) 
+        throw invalid_argument("Invalid month value. Month must be between 1 and 12.");
+    else 
+        month = m;
+}
+
+void Date::setYear(int y)
+{
     if (y < 0)
-    {
-        cout << "Invalid year value. Year must be non-negative." << endl;
-        year = 0;
-    }
+        throw invalid_argument("Invalid year value. Year must be non-negative.");
     else
         year = y;
 }
+
 
 unsigned int Date::getMonth() const
 {
@@ -251,27 +256,6 @@ void Date::nextDay()
         }
     }
 
-}
-
-void Date::setDay(int d)
-{
-    day = d;
-}
-
-void Date::setMonth(int m)
-{
-    month = m;
-}
-
-void Date::setYear(int y)
-{
-    if (y < 0)
-    {
-        cout << "Invalid year value. Year must be non-negative." << endl;
-        year = 0;
-    }
-    else
-        year = y;
 }
 
 void Date::printDate()
