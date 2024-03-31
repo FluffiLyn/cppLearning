@@ -18,7 +18,7 @@ public:
     double getPerimeter(double, double);
 
     // Drawing functions
-    void draw(char = ' ', char = '*');
+    void draw();
     void setFillCharacter(char);
     void setPerimeterCharacter(char);
 

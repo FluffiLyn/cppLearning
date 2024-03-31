@@ -7,6 +7,11 @@ int main()
     Rectangle rectangle(5.0, 10.0);
     rectangle.draw();
 
+    Rectangle rectangle2(10.0,10.0);
+    rectangle2.setFillCharacter('#');
+    rectangle2.setPerimeterCharacter('$');
+    rectangle2.draw();
+
     return 0;
 }
 
@@ -59,10 +64,8 @@ double Rectangle::getArea(double length, double width)
 }
 
 // Implementations for added functions
-void Rectangle::draw(char fillChar, char borderChar)
+void Rectangle::draw()
 {
-    this->fillChar = fillChar;
-    this->borderChar = borderChar;
     int x1 = 0, y1 = 0, x2 = min(25, static_cast<int>(length)), y2 = min(25, static_cast<int>(width));
     drawRectangle(x1, y1, x2, y2);
 }
@@ -83,7 +86,7 @@ void Rectangle::drawRectangle(int startX, int startY, int endX, int endY)
     // Draw top and bottom borders
     for (int i = startX; i <= endX; i++)
         cout << borderChar;
-    cout << '\n';
+    cout << endl;
 
     // Draw left and right borders and fill
     for (int y = startY + 1; y < endY; y++)
@@ -91,11 +94,11 @@ void Rectangle::drawRectangle(int startX, int startY, int endX, int endY)
         cout << borderChar;
         for (int x = startX + 1; x < endX; x++)
             cout << fillChar;
-        cout << borderChar << '\n';
+        cout << borderChar << endl;
     }
 
     // Draw top border again
     for (int i = startX; i <= endX; ++i)
         cout << borderChar;
-    cout << '\n';
+    cout << endl;
 }
