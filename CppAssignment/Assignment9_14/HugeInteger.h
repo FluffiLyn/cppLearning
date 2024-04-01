@@ -88,7 +88,7 @@ void HugeInteger::add(HugeInteger b)
         sum[i] %= 10;
     }
     
-    if(sum[maxlen] > 0)//Whether the number overflows
+    if(sum[maxlen] > 0)
     {
 		maxlen++;
 	} 
