@@ -1,6 +1,5 @@
 #include <iostream>
 #include <string>
-#include <cstring>
 using namespace std;
 
 //1. We input a very long number and store it in the form of string
@@ -195,7 +194,7 @@ void div2(string charA, string charB)
         return;
     }
 
-    //一开始，除数的剩余部分是它本身
+    //一开始，被除数的剩余部分是它本身
     for (int i = 0; i < lenA; i++)
     {
         d[i] = a[i];
