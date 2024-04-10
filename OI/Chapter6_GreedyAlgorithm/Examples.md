@@ -79,6 +79,93 @@ int main()
 输入格式：n (1<=n<=100)
 输出格式：最少移动次数
 
+思想：求平均数，并将所有数减去平均数，将题目转化为"求使得所有牌堆变成0的最小步数"。
 ```c++
+#include <iostream>
+using namespace std;
 
+int main()
+{
+    int n = 0, sum = 0,count = 0, a[100];
+    cin >> n;
+    for(int i = 0; i < n; i++)
+    {
+        cin >> a[i];
+        sum += a[i];
+    }
+
+    //将所有数减去平均数，方便计算
+    int j, k;
+    sum /= n;
+    for (j = 0; j < n; j++)
+    {
+        a[j] -= sum;
+    }
+
+    //过滤左右两边的0
+    j = 0, k = n;
+    while(a[j] == 0 && j < n) j++;
+    while(a[k] == 0 && k > 0) k--;
+
+    while(j < k)
+    {
+        a[j + 1] += a[j];
+        a[j] = 0;
+        count++; j++;
+        //过滤移牌过程中产生的0
+        while (a[j] == 0 && j < k) j++;
+    }
+
+    cout << count << endl;
+
+    return 0;
+}
+```
+
+## 6.3 删数问题
+输入一个高精度整数n，去掉其中任意s个数字后，剩下的数字按原左右顺序组成新的正整数。寻找一个方案，使得剩下的数字组成的新数最小。
+
+输入：n s
+输出：剩下的最小数
+
+思想：每一步总是选择一个使剩下的数最小的数字删去，即按**高位到低位**的顺序搜索。若各位数字递增，则删除最后一个数字，否则，删除第一个减区间的首个字符。回到串首，重复以上过程直至s次。
+
+```c++
+#include <iostream>
+#include <string>
+using namespace std;
+int s, len;
+string n;
+
+int main()
+{
+    cin >> n >> s;
+    len = n.length();
+
+    for (int i = 0; i < s; i++)
+    {
+        for (int j = 0; j < len; j++)
+        {
+            if (n[j] > n[j + 1])
+            {
+                //删除字符串n的下标为j+1的字符，后面的字符往前移动
+                for (int k = j; k < len; k++)
+                    n[k] = n[k + 1];
+                n[len - 1] = '\0';
+                len--;
+                break;
+            }
+        }
+    }
+
+    //删除前导0
+    for(int j = 0; n[j] == '0' && len > 1; j++)
+    {
+        len--;
+    }
+
+    cout << n << endl;
+
+    return 0;
+}
 ```
