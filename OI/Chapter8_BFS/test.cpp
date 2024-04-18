@@ -40,6 +40,8 @@ void bfs()
                 queue[tail] = i;
                 before[tail] = head;
                 s[i] = 1;
+                
+                //搜索到H城市时：
                 if (i == 7) 
                 {
                     output(tail);
