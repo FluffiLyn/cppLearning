@@ -1,30 +1,44 @@
 #include <iostream>
 using namespace std;
-
-int n, m, a[1145],left_, right_;
+const int MAXN = 1025, MAXM = 11;
+int matchlist[MAXN][MAXN];
+int m;
 
 int main()
 {
-    cin >> n >> m;
-    for (int i = 1; i <= n; i++)
-    {
-        cin >> a[i];
+    cout << "input:";
+    cin >> m;
+    int n = 1 << m, k = 0, half = 1;//左移运算符 
+    matchlist[0][0] = 1;
+
+    for (; k < m; k++)
+    {   
+        //通过左上方矩阵构造右上方矩阵
+        for (int i = 0; i < half; i++)
+        {
+            for (int j = 0; j < half; j++)
+                matchlist[i][j+half] = matchlist[i][j] + half;
+        }
+    
+        //左上方=右下方，左下方=右上方
+        for (int i = 0; i < half; i++)
+        {
+            for (int j = 0; j < half; j++)
+            {
+                matchlist[i + half][j] = matchlist[i][j + half];
+                matchlist[i + half][j + half] = matchlist[i][j]; 
+            }
+        }
+        half *= 2;
     }
 
-    a[0] = -1;
-    for (int i = 1; i <= m; i++)
+    for (int i = 0; i < n; i++)
     {
-        left_ = 1, right_ = n;
-        int x, mid;
-        cin >> x;
-
-        while (left_ <= right_)
+        for (int j = 0; j < n; j++)
         {
-            mid = (left_ + right_) / 2;
-            if (a[mid] > x) right_ = mid - 1; 
-            else left_ = mid + 1;
+            cout << matchlist[i][j] << " ";
         }
-        cout << a[right_] << endl;
+        cout << endl;
     }
     return 0;
 }

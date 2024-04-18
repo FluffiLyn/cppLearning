@@ -73,14 +73,50 @@ int main()
 }
 ```
 
-## 7.2 取模运算
-输入b、p、k的值，求b^p mod k的值，其中b，p，k*k为长整形数。
+## 7.2 循环比赛日程表
+```c++
+#include <iostream>
+using namespace std;
+const int MAXN = 1025, MAXM = 11;
+int matchlist[MAXN][MAXN];
+int m;
 
-输入样例：
-```
-2 10 9
-```
-输出样例：
-```
-2^10 mod 9=7
+int main()
+{
+    cout << "input:";
+    cin >> m;
+    int n = 1 << m, k = 0, half = 1;//左移运算符 
+    matchlist[0][0] = 1;
+
+    for (; k < m; k++)
+    {   
+        //通过左上方矩阵构造右上方矩阵
+        for (int i = 0; i < half; i++)
+        {
+            for (int j = 0; j < half; j++)
+                matchlist[i][j+half] = matchlist[i][j] + half;
+        }
+    
+        //左上方=右下方，左下方=右上方
+        for (int i = 0; i < half; i++)
+        {
+            for (int j = 0; j < half; j++)
+            {
+                matchlist[i + half][j] = matchlist[i][j + half];
+                matchlist[i + half][j + half] = matchlist[i][j]; 
+            }
+        }
+        half *= 2;
+    }
+
+    for (int i = 0; i < n; i++)
+    {
+        for (int j = 0; j < n; j++)
+        {
+            cout << matchlist[i][j] << " ";
+        }
+        cout << endl;
+    }
+    return 0;
+}
 ```
