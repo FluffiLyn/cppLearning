@@ -15,11 +15,11 @@ int queue[101] = {0}, before[101] = {0};//queue时存储扩展节点的队列，
 bool s[8] = {0};//记录该城市已到过
 void output(int d)
 {
-    cout << char(queue[d] + 64);
+    cout << char(queue[d] + 65);
     while (before[d])
     {
         d = before[d];
-        cout << "--" << char(queue[d] + 64);
+        cout << "--" << char(queue[d] + 65);
     }
     cout << endl;
 }
