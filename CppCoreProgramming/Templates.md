@@ -145,3 +145,87 @@ f();//OK
 ```
 
 ## 1.3 Multiple Template Parameters
+Return type depends on the order of call arguments parameters. If you defined a function max(T a, T b) and call it as max(66.66, 42), it will return double 66.66. If you call it as max(42, 66.66), it will return int 66.
+
+Following are ways to solve these.
+
+### 1.3.1 Template Parameters for Return Types
+```c++
+template<typename T1, typename T2, typename RT>
+RT max(T1 a, T2 b);
+//...
+::max<int,double,double>(4, 7.2)//OK, but tedious
+```
+We can simplify this by specifying only the return type:
+```c++
+::max<double>(4,7.2)//Return type is double, T1 and T2 are deduced
+```
+
+### 1.3.2 Deducing the Return Type
+Since C++14, we can use "auto" to deduce the return type.
+```c++
+template<typename T1, typename T2>
+auto max(T1 a, T2 b)
+{
+    return b < a ? a : b;
+}
+```
+Before C++14, we should also use "decltype" to deduce the return type.
+```c++
+template<typename T1, typename T2>
+auto max(T1 a, T2 b) -> decltype(b < a ? a : b)
+{
+    return b < a ? a : b;
+}
+```
+Here, the resulting type is determined by the yield of ?: . Note that 
+`auto max (T1 a, T2 b) -> decltype(b < a ? a : b)` is a declaration.
+
+
+However, sometimes the return type is a reference type. For this reason you should use return the type **decayed from T**.
+```c++
+#include <type_traits>
+template<typename T1, typename T2>
+auto max(T1 a, T2 b) -> typename std::decay<decltype(b < a ? a : b)>::type
+{
+    return b < a ? a : b;
+}
+```
+`std::decay<>` is defined in std in `<type_traits>`
+
+Note that an initialization of type `auto` always decays.
+```c++
+int i = 42;
+int const& ir = i;//ir refers to i
+auto a = ir;//a is declared as new object of type int
+```
+
+<details> <summary>什么是std::decay<>?</summary>
+std::decay是C++标准库中提供的一个类型萃取工具，其功能是将给定的类型T“衰减”（decay）成一个更基础的类型，具体来说，它执行如下操作：
+
+1. 数组到指针的转换： 如果T是数组类型（如T[]或T[N]），std::decay将其转换为指向数组元素类型的指针（如T*）。
+
+2. 函数到指针的转换： 若T是函数类型（如void(int)），std::decay将其转换为指向该函数类型的指针（如void (*)(int)）。
+
+3. 去除引用： 如果T是引用类型（如T&或T&&），std::decay将其转换为对应的非引用类型（即去掉&或&&，得到T）。
+
+4. 去除cv-qualifiers（const/volatile限定符）： std::decay还会移除T上的const、volatile以及const volatile限定符，无论这些限定符出现在何处（顶层或底层）。
+
+5. 从左值到右值的转换： 虽然不直接体现在std::decay的名称中，但它也模拟了编译器在函数参数按值传递时对左值的隐式转换，即将左值对象转换为对应的右值临时对象。这意味着即使T原本是某种用户自定义类型（如std::string）的左值引用，std::decay也会将其视为该类型的一个普通（非引用）副本。
+</details>
+
+<details><summary>What is std::decay<>?</summary>
+std::decay is a type manipulation tool provided in the C++ Standard Library that "decays" a given type T into a more fundamental form by performing the following operations:
+
+1. Array-to-pointer conversion: If T is an array type (e.g., T[] or T[N]), std::decay converts it to a pointer to the array's element type (e.g., T*).
+
+2. Function-to-pointer conversion: If T is a function type (e.g., void(int)), std::decay converts it to a pointer to that function type (e.g., void (*)(int)).
+
+3. Reference removal: If T is a reference type (e.g., T& or T&&), std::decay converts it to the corresponding non-reference type (i.e., removes the & or &&, resulting in T).
+
+4. Removal of cv-qualifiers (const/volatile qualifiers): std::decay also removes any const, volatile, or const volatile qualifiers from T, regardless of where they appear (top-level or nested).
+
+5. Conversion from lvalue to rvalue: Although not directly implied by its name, std::decay also simulates the implicit conversion of lvalue objects to corresponding rvalue temporary objects that occurs when function arguments are passed by value. This means that even if T is originally a reference to some user-defined type (like std::string), std::decay treats it as a plain (non-reference) instance of that type.
+</details>
+
+### 1.3.3 Return Type as Common Type
