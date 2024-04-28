@@ -1,11 +1,11 @@
-using namespace std;
+#pragma once
 
 class Account
 {
 public:
     Account(double);
-    void credit(double&);//Adds amount to the current balance
-    bool debit(double&);//Withdraws money from the account and doesn't exceed
+    void credit(double);//Adds amount to the current balance
+    bool debit(double);//Withdraws money from the account and doesn't exceed
     double getBalance();
 
 private:
