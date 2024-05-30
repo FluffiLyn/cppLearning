@@ -1,7 +1,14 @@
-#include <stack>
-#include <vector>
-
-int main()
+#include <iostream>
+using namespace std;
+int main () 
 {
-    stack<int,vector<int>> ;
+    char c;
+    int n;
+    char str[256];
+    cout << "Enter a word: ";
+    cin >> c;
+    cin.putback (c);
+    cin >> str;
+    cout << " You have entered word " << str << endl;
+    return 0;
 }
