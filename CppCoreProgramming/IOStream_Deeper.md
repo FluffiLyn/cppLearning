@@ -94,34 +94,57 @@ int main ()
 
 例：输入一串数字（包括空格），当键入回车时计算出输入数字的和。
 ```c++
-复制代码
- 1 #include<iostream>
- 2 using namespace std;
- 3 
- 4 int main()
- 5 {
- 6      int a;
- 7      int sum;
- 8      
- 9      while(cin>>a)
-10      {
-11          sum+=a;
-12          while(cin.peek()==' ')//观测到当前字符为空格的话
-13          {
-14              cin.get();　　　　//从流中提取当前的空格
-15          }
-16          
-17          if(cin.peek()=='\n')　　//观测到当前字符为换行符的话直接终止
-18          break;
-19      }
-20      
-21      cout<<"结果是："<<sum<<endl;
-22      return 0;
-23     
-24  } 
-```
-### cin.read(),cout.write(),cin.gcount()
+#include<iostream>
+using namespace std;
 
+int main()
+{
+    int a;
+    int sum;
+      
+    while(cin>>a)
+    {
+        sum+=a;
+        while(cin.peek()==' ')//观测到当前字符为空格的话
+        {
+            cin.get();　　　　//从流中提取当前的空格
+        }        
+        if(cin.peek()=='\n')　　//观测到当前字符为换行符的话直接终止
+        break;
+    }
+    
+    cout<<"结果是："<<sum<<endl;
+    return 0;
+} 
+```
+### 非格式化IO：cin.read(),cout.write(),cin.gcount()
+非格式化的输入输出用于处理二进制数据。
+
+(1)cin.read()
+```c++
+istream& read(char* buffer, streamsize num);
+```
+从流中或者文件中按字节读取数据。例如：
+```c++
+char buf[] = "HAPPY BIRTHDAY";
+cout.write(buf,10);
+```
+输出：
+```
+HAPPY BIRT //空格也算一个字节
+```
+
+(2)cin.gcount()
+```c++
+streamsize gcount();
+```
+用于获取上一次读操作获取的字符数，与cin.write()配合使用。
+
+(3)cout.write()
+```c++
+ostream& write(const char* buffer, streamsize num);
+```
+用于将一个字符数组的数据写入输出流，可以精确控制。
 
 ## cerr（标准错误流）
 cerr 对象是非缓冲的，且每个流插入到 cerr 都会立即输出。
@@ -131,3 +154,4 @@ clog 对象附属到标准输出设备，通常也是显示屏，但是 clog 对
 
 clog 通常用于记录目的。对于非关键事件日志记录，效率更为重要，因此clog 优于 cerr。缓冲输出不适用于严重错误。在系统崩溃的情况下，可能会出现输出仍在缓冲区中并且没有写入磁盘并且无法检索错误消息的情况。我们不能在系统崩溃的情况下丢失错误数据，因此即使速度较慢，我们也会继续将严重错误写入磁盘。
 
+# 二、io manipulator
