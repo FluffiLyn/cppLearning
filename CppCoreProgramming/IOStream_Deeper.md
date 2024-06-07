@@ -155,3 +155,162 @@ clog 对象附属到标准输出设备，通常也是显示屏，但是 clog 对
 clog 通常用于记录目的。对于非关键事件日志记录，效率更为重要，因此clog 优于 cerr。缓冲输出不适用于严重错误。在系统崩溃的情况下，可能会出现输出仍在缓冲区中并且没有写入磁盘并且无法检索错误消息的情况。我们不能在系统崩溃的情况下丢失错误数据，因此即使速度较慢，我们也会继续将严重错误写入磁盘。
 
 # 二、io manipulator
+
+## Numeration
+hex,oct,dec,setbase(num)
+
+showbase可以显示进制的符号。对于oct会在左侧显示0，对于hex会在左侧显示0x。
+
+## Floating-Point Precision
+```c++
+cout.precision(5);
+cout << num;
+
+cout << setprecision(10) << num2;
+```
+
+## Floating-Point Numbers: scientific & fixed
+fixed 是一个流操作符，用于设置输出为定点格式。在定点格式中，小数点的位置是固定的。
+scientific 是一个流操作符，用于设置输出为科学计数法格式。
+```c++
+#include <iostream>
+#include <iomanip>
+using namespace std;
+ 
+int main() {
+    double num = 1234.56789;
+    
+    // 使用 setprecision
+    cout << setprecision(5) << num << endl;  // 输出: 1234.6
+ 
+    // 使用 setprecision 和 fixed
+    cout << setprecision(3) << fixed << num << endl;  // 输出: 1234.568
+ 
+    // 使用 setprecision 和 scientific
+    cout << setprecision(3) << scientific << num << endl;  // 输出: 1.235e+03
+ 
+    return 0;
+}
+```
+
+## Field Width
+会在左侧加空格。当值小于等于字符串长度时，不做处理。
+```c++
+int widthValue = 4;
+char sentence[10];
+cout << "Enter a sentence:" << endl;
+cin.width(5);//Input only 5 characters from sentence
+while(cin>>sentence)
+{
+    cout.width(widthValue++);
+    cout << sentence << endl;
+    cin.width(5);//Input 5 more characters from sentence
+}
+
+cout << setw(2) << "abc";
+```
+
+## User-defined Output Stream Manipulator
+```c++
+ostream& tab(ostream& output)
+{
+    return output << '\t';
+}
+
+int main()
+{
+    cout << tab << "bruh";
+    return 0;
+}
+```
+
+## showpoint
+使用showpoint之后，会使浮点数输出尾部的0。默认浮点数长度是6。
+
+使用noshowpoint来删除尾部0。
+```c++
+cout << "Not showing point:" << 9.9000 << endl;
+cout << "Showing point:" << showpoint << 9.9000; 
+```
+
+## justification & padding
+left,right,internal,fill,setfill
+```c++
+cout.fill('*');
+```
+```c++
+#include <iomanip>
+#include <iostream>
+#include <locale>
+
+int main()
+{
+    std::cout.imbue(std::locale("en_US.utf8"));
+
+    std::cout << "Default positioning:\n" << std::setfill('*')
+        << std::setw(12) << -1.23 << '\n'
+        << std::setw(12) << std::hex << std::showbase << 42 << '\n'
+        << std::setw(12) << std::put_money(123, true) << "\n\n";
+
+    std::cout << "Left positioning:\n" << std::left
+        << std::setw(12) << -1.23 << '\n'
+        << std::setw(12) << 42 << '\n'
+        << std::setw(12) << std::put_money(123, true) << "\n\n";
+
+    std::cout << "Internal positioning:\n" << std::internal
+        << std::setw(12) << -1.23 << '\n'
+        << std::setw(12) << 42 << '\n'
+        << std::setw(12) << std::put_money(123, true) << "\n\n";
+
+    std::cout << "Right positioning:\n" << std::right
+        << std::setw(12) << -1.23 << '\n'
+        << std::setw(12) << 42 << '\n'
+        << std::setw(12) << std::put_money(123, true) << '\n';
+}
+```
+输出：
+```
+Default positioning:
+*******-1.23
+********0x2a
+***USD *1.23
+
+Left positioning:
+-1.23*******
+0x2a********
+USD *1.23***
+
+Internal positioning:
+-*******1.23
+0x********2a
+USD ****1.23
+
+Right positioning:
+*******-1.23
+********0x2a
+***USD *1.23
+```
+internal 会使符号前置
+
+## uppercase
+使输出全部为大写。
+## boolalpha
+将布尔值以字符串true,false的形式输出。
+
+## cout.flags()
+作为ostream的成员函数，可用于设置或重置格式状态。它返回fmtflag类型的数据。
+```c++
+fmtflags flags() const;//返回当前的格式化设置
+fmtflags flags(fmtflags f);//以给定的格式f替换当前设置
+```
+
+## tie()
+tie()是将两个stream绑定的函数，空参数的话返回当前的输出流指针。
+
+在默认的情况下cin绑定的是cout，每次执行 << 操作符的时候都要调用flush，这样会增加IO负担。可以通过tie(0)（0表示NULL）来解除cin与cout的绑定，进一步加快执行效率。
+
+```c++
+cin.tie(&cout);
+cin.tie(0);
+cout.tie(0);
+```

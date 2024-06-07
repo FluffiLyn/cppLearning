@@ -1,8 +1,10 @@
+#include <iomanip>
 #include <iostream>
+#include <locale>
 using namespace std;
-int main () 
+
+int main()
 {
-    char buf[] = "HAPPY BIRTHDAY";
-    cout.write(buf,10);
+    cout<< cout.flags(ios::fixed);
     return 0;
 }
