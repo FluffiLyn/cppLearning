@@ -130,10 +130,10 @@ int main()
 | `good()` | 检查文件流是否处于一个有效状态 | 无 |
 | `bad()` | 检查文件流是否处于一个错误状态 | 无 |
 | `operator>>` | 从文件流中读取数据 | `int`, `char`, `string` 等不同类型的数据 |
-| `tellg()` | 返回当前文件指针的位置（读取位置） | 无 |
-| `seekg()` | 设置读取位置 | `streamoff off`, `ios_base::seekdir way` |
-| `tellp()` |  | |
-| `seekp()` |  | |
+| `tellg()` | 返回当前读指针的位置 | 无 |
+| `seekg()` | 设置读指针位置 | `streamoff off`, `ios_base::seekdir way` |
+| `tellp()` | 返回当前写指针的位置 | |
+| `seekp()` | 设置写指针位置 | |
 | `peek()` | 查看下一个字符，但不提取它 | 无 |
 | `ignore()` | 忽略一定数量的字符 | `streamsize n = 1`, `int_type delim = Traits::eof()` |
 
@@ -144,3 +144,33 @@ seekg（）是对输入文件定位，它有两个参数：第一个参数是偏
 * ios::beg：表示输入流的开始位置(begin)
 * ios::cur：表示输入流的当前位置(current)
 * ios::end：表示输入流的结束位置(end)
+
+要获取文件长度，可以用 seekg 函数将文件读指针定位到文件尾部，再用 tellg 函数获取文件读指针的位置，此位置即为文件长度。
+
+### 1.4 随机存取文件
+随机存取指的是**直接移动文件的位置指针，在指定位置读写数据**，而非真的随机。
+
+假设我们有这样一个类：
+```c++
+Class CustomClass
+{
+    int num;
+    char ch[16];
+};
+```
+#### 创建.dat文件，写入字节数据
+使用reinterpret_cast<const char *>(&)将指针转化为字符指针，以输出其他类型的对象，否则write()无法运行。
+```c++
+outfile.write(reinterpret_cast<const char*>(&CustomClass));
+```
+
+#### 以二进制模式打开用于输出的文件
+```c++
+ofstream outfile("filename.dat",ios::out|ios::binary);
+```
+
+#### 向文件中随机写入数据
+```c++
+
+outfile.seekp()
+```

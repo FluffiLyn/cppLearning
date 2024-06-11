@@ -1,10 +1,17 @@
-#include <iomanip>
-#include <iostream>
-#include <locale>
+#define _CRT_SECURE_NO_WARNINGS
+#include<iostream>
 using namespace std;
+ 
+class CStudent
+{
+    public:
+        char szName[20];
+        int age;
+};
 
 int main()
 {
-    cout<< cout.flags(ios::fixed);
-    return 0;
+	CStudent s;
+	cout << sizeof(s);
+	return 0;
 }
