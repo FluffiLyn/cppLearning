@@ -1,17 +1,20 @@
-#define _CRT_SECURE_NO_WARNINGS
-#include<iostream>
+#include <iostream>
+#include <vector>
 using namespace std;
- 
-class CStudent
-{
-    public:
-        char szName[20];
-        int age;
-};
 
-int main()
+template <typename Comparable>
+int binarySearch(const vector<Comparable> &a, const Comparable &x)
 {
-	CStudent s;
-	cout << sizeof(s);
-	return 0;
+    int low = 0, high = a.size() - 1;
+    while (low <= high)
+    {
+        int mid = (low + high) / 2;
+        if (a[mid] < x)
+            low = mid + 1;
+        else if (a[mid] > x)
+            high = mid - 1;
+        else
+            return mid;
+    }
+    return -1;
 }
