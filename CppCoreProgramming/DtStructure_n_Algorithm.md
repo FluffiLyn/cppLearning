@@ -78,7 +78,7 @@ $O(N)$ work followed by $O(N^2)$, so $T(N)=O(N^2)$
 
 4. **IF/ELSE**: Never more than the running time of the **test** plus the **larger** of the running times of S1 and S2.
 
-    ("test" means statements in if())
+("test" means statements in if())
 
 ```c++
 //example
