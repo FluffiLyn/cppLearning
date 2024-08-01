@@ -44,7 +44,7 @@ Also, T(N) is the **lower bound** of f(N).
 Note that:
 1. Do not add any constant or low-order terms inside Big-Oh.
 
-2. We can calculate the relative rates of growth by calculating $\lim\limits_{x\rightarrow\infin}\frac{f(N)}{g(N)}$
+2. We can calculate the relative rates of growth by calculating $\lim\limits_{x\rightarrow\infty}\frac{f(N)}{g(N)}$
 
 ## 2.3 What to analyze
 Generally, the quantity required is the **worst-case** time.
@@ -92,8 +92,7 @@ else
 General rule: An algorithm is $O(logN)$ if it takes constant time  $(O(1))$ to cut the problem size by a fraction (usually $\frac{1}{2}$).
 
 Examples:
----
-1. **Binary search (二分查找)**: Given an integer $X$ and integers $A_0,A_1,...,A_{n-1}$, which are presorted and already in memory, find i such that $A_i = X$, or return -1 if X is not in the input.
+#### 1. Binary search (二分查找): Given an integer $X$ and integers $A_0,A_1,...,A_{n-1}$, which are presorted and already in memory, find i such that $A_i = X$, or return -1 if X is not in the input.
 
 ```c++
 template <typename Comparable>
@@ -114,3 +113,55 @@ int binarySearch(const vector<Comparable> &a, const Comparable &x)
 }
 ```
 * Binary search supports the **contains** operation in $O(logN)$ time, but all other operations require $O(N)$ time.
+
+
+#### 2. Euclid's algorithm (欧几里得算法)
+* gcd: The greatest common divisor
+```c++
+long long gcd(long long m, long long n)
+{
+    while(n != 0)
+    {
+        long long rem = m % n;
+        m = n;
+        n = rem;
+    }
+    return m
+}
+```
+* $T(N) = 2logN = O(logN)$
+---
+**Theorem 2.1:** If $M > N$, then $M mod N < M/2$.
+
+Proof: If $N \leq M/2$, then since the remainder is smaller than N, the theorem holds.
+If $N > M/2$, then N goes into M once with a remainder $M  - N < M/2$, proving it.
+
+
+#### 3. Exponentiation
+Main idea: 
+* Base case: $N \leq 1$
+* If N is even, then $X^N = X^{N/2} \cdot X^{N/2}$
+* If N is odd, then $X^N = X^{(N-1)/2} \cdot X^{(N-1)/2} \cdot X$
+
+Time: $T(N) = 2logN = O(logN)$, because at most two multiplications are required to **halve the problem** if N is odd.
+
+```c++
+long long pow(long long x, int n)
+{
+    if (n == 0)
+        return 1;
+    if (n == 1)
+        return x;
+    if (n % 2 == 0)
+        return pow(x * x, n / 2);
+    else
+        return pow(x * x, n / 2) * x;
+}
+```
+
+**Wrong return statements:**
+```c++
+return pow(pow(x,2), n/2);
+return pow(pow(x,n/2),2);
+return pow(x,n/2) * pow(x, n/2);
+```
