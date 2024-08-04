@@ -161,7 +161,7 @@ long long pow(long long x, int n)
 
 **Wrong return statements:**
 ```c++
-return pow(pow(x,2), n/2);
-return pow(pow(x,n/2),2);
-return pow(x,n/2) * pow(x, n/2);
+return pow(pow(x,2), n/2);//两层递归
+return pow(pow(x,n/2),2);//两层递归
+return pow(x,n/2) * pow(x, n/2);//重复计算
 ```
