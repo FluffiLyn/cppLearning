@@ -1,2 +1,0 @@
-
-        char szName[21];

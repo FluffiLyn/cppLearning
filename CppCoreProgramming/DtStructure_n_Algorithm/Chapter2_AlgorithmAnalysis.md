@@ -1,6 +1,3 @@
-# Data Structures and Algorithms
-This is my note.
-
 # Chapter 2: Algorithm Analysis
 
 ## 2.1 Mathematical Background
