@@ -6,6 +6,7 @@
 Following are notations for calculating **relative rates of growth（相对增长率）**.
 
 $T(N) =$
+
 * $O(f(N)):\space\le$ 
 * $\Omega(g(N)):\space\ge$
 * $\Theta(h(N)):\space=$
@@ -34,7 +35,7 @@ Also, T(N) is the **lower bound** of f(N).
     |$NlogN$||
     |$N^2$|Quadratic|
     |$N^3$|Cubic|
-    |2^N|Exponential|
+    |$2^N$|Exponential|
 
 3. For any constant k, $log^kN = O(N)$, which tells you that log grow very slowly.
 
@@ -62,6 +63,7 @@ for (i; i< n; i++)
 $T(N) = O(N^2)$
 
 3. **Consecutive Statements (顺序语句)**: The **maximum** is the one that counts.
+
 ```C++
 //example
 for(sth)
@@ -114,6 +116,7 @@ int binarySearch(const vector<Comparable> &a, const Comparable &x)
 
 #### 2. Euclid's algorithm (欧几里得算法)
 * gcd: The greatest common divisor
+
 ```c++
 long long gcd(long long m, long long n)
 {
@@ -127,7 +130,7 @@ long long gcd(long long m, long long n)
 }
 ```
 * $T(N) = 2logN = O(logN)$
----
+
 **Theorem 2.1:** If $M > N$, then $M mod N < M/2$.
 
 Proof: If $N \leq M/2$, then since the remainder is smaller than N, the theorem holds.
