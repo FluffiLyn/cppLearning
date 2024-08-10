@@ -2,19 +2,14 @@
 #include <vector>
 using namespace std;
 
-template <typename Comparable>
-int binarySearch(const vector<Comparable> &a, const Comparable &x)
+int main()
 {
-    int low = 0, high = a.size() - 1;
-    while (low <= high)
-    {
-        int mid = (low + high) / 2;
-        if (a[mid] < x)
-            low = mid + 1;
-        else if (a[mid] > x)
-            high = mid - 1;
-        else
-            return mid;
-    }
-    return -1;
+    vector<int> vec;
+    vec.push_back(1);
+    vec.push_back(2);
+    vec.push_back(3);
+
+    for (vector<int>::iterator it = vec.begin(); it != vec.end(); it++)
+        cout << *it;
+    return 0;
 }
