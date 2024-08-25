@@ -91,6 +91,7 @@ else
 General rule: An algorithm is $O(logN)$ if it takes constant time  $(O(1))$ to cut the problem size by a fraction (usually $\frac{1}{2}$).
 
 Examples:
+
 #### 1. Binary search (二分查找): Given an integer $X$ and integers $A_0,A_1,...,A_{n-1}$, which are presorted and already in memory, find i such that $A_i = X$, or return -1 if X is not in the input.
 
 ```c++
