@@ -87,3 +87,54 @@ vector<obj>::iterator itr = v.begin();
 while(itr != v.end())
     cout << *itr++ << endl;
 ```
+
+#### Container Operations That Require Iterators
+```c++
+iterator insert(iterator pos, const Object & x);
+iterator erase(iterator pos);
+iterator erase(iterator start, iterator end);
+```
+
+Example: List
+```c++
+template <typename T>
+void removeEveryOtherItem(T & lst)
+{
+    auto itr = lst.begin();
+    while (itr != lst.end())
+    {
+        itr = lst.erase(itr);
+        if(itr!= lst.end())
+            ++itr;
+    }
+}
+```
+
+### 3.3.3 const_iterators
+The comiler will force you to use a **const_iterator** to traverse a constant collection.
+```c++
+iterator begin();
+const_iterator begin() const;
+iterator end();
+const_iterator end() const;
+```
+
+When begin is invoked on a const container, it'll return a **const_iterator**.
+
+Example: (begin(c) is C++11 feature)
+```c++
+template <typename C>
+void print(const C & c, ostream &out = cout)
+{
+    if(c.empty()) out << "(empty)";
+    else
+    {
+        auto itr = begin(c); //itr will be deduced to a const_iterator
+        out << "[" << *itr++;
+        while(itr != end(c)) out << ", " << *itr++;
+        out << " ]" << endl;
+    }
+}
+```
+
+## 3.4 Implementation of vector
