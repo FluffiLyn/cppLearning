@@ -607,4 +607,37 @@ For an empty stack, `topOfStack` is -1. (init)
 出栈时返回栈顶的值，可以方便使用被移除的元素。
 ```
 
-### 3.6.3 Application of Stacks
+### 3.6.3 Application of Stack
+
+#### Balancing Symbols
+Compiler check your programs for syntax errors.
+
+For example, [()] is valid, but [(]) is invalid.
+
+1. Make an empty stack. Read characters until EOF.
+2. If char is an opening symbol, push it onto the stack.
+3. If it is a closing symbol & the stack is empty, report an error. Otherwise, pop the stack. 
+4. If the symbol popped isn't the corresponding opening symbol, report an error.
+5. At EOF, if the stack isn't empty, report an error.
+
+#### Postfix Expressions
+Postfix notation / reverse Polish notation
+
+Normal: $4.99 * 1.06 + 5.99 + 6.99 * 1.06$
+Postfix: $4.99 1.06 * 5.99 + 6.99 1.06 * +$
+
+Example: 6 5 2 3 + 8 * + 3 + * is evaluated as follows:
+```
+The first four numbers are placed.
+3 <-top
+2
+5
+6
+```
+
+```
+'+' is read, so 3 and 2 are popped, and the sum 5 is pushed.
+5
+5
+6
+```
