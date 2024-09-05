@@ -641,3 +641,109 @@ The first four numbers are placed.
 5
 6
 ```
+
+```
+Next, 8 is pushed.
+8
+5
+5
+6
+```
+
+```
+'*' is read, so 8 and 5 are popped, and 40 is pushed
+40
+5
+6
+```
+
+```
+'+' is seen.
+45
+6
+```
+
+```
+3
+45
+6
+```
+
+```
+48
+6
+```
+
+```
+288
+```
+
+**Time:** $O(N)$
+
+cuz processing each element in the input consists of stack operations and thus takes constant time.
+
+#### Infix to Postfix Conversion
+中缀（原版）转后缀。
+
+Take +,*,() as an example:
+```
+infix:
+a+b*c+(d*e+f)*g
+
+prefix:*
+a b c * + d e * f + g * +
+```
+
+核心思想：
+1. 初始化
+   * 创建一个栈用于**存储操作符**
+   * 创建一个字符串用于存储后缀表达式
+2. 遍历中缀表达式
+   * 遇到变量（或数字），直接添加到字符串中
+   * 遇到左括号，入栈
+   * 遇到右括号，不断弹出栈顶的操作符，并添加到字符串中，直到遇到左括号，然后丢弃左括号。
+   * 遇到操作符，弹出栈顶操作符并添加到字符串中，直到栈顶的操作符优先级**小于**当前操作符，然后将当前操作符压入栈中
+3. 处理剩余操作符  
+
+**Time:**$T(N)$
+
+#### Function Calls
+Tail recursion 尾递归：函数调用出现在调用者函数的尾部。因为是尾部, 所以根本没有必要去保存任何局部变量. 直接让被调用的函数返回时越过调用者, 返回到调用者的调用者去。
+
+尾递归就是把当前的运算结果（或路径）放在参数里传给下层函数。
+
+不用尾递归会导致需要保存很多中间函数的堆栈，你栈爆了。
+
+例：Fibonacci
+```c++
+// Not tail recursion
+int Fibonacci(int n)
+{
+    if (n <= 1) return n;
+    return Fibonacci(n - 1) + Fibonacci(n - 2);
+}
+```
+
+```c++
+// Tail recursion
+int FibonacciTailRecursive(int n,int fnMinus2,int fnMinus1)
+{
+   if(n==0)
+      return fnMinus2; 
+    return FibonacciTailRecursive(n-1, fnMinus1 ,fnMinus1 + fnMinus2);
+}
+
+int callFib(int n)
+{
+    return FibonacciTailRecursive(n, 0, 1);
+}
+```
+
+所有的递归都能写成循环。
+
+## 3.7 The Queue ADT
+Queue are **lists**.
+
+### 3.7.1 Queue Model
+* enqueue
+* dequeue
