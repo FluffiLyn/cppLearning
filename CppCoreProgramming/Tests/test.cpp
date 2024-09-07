@@ -1,48 +1,50 @@
 #include <iostream>
-#include <vector>
-// 矩阵乘法
-std::vector<std::vector<unsigned long long>> matrixMultiply(
-    const std::vector<std::vector<unsigned long long>>& A,
-    const std::vector<std::vector<unsigned long long>>& B) {
-    std::vector<std::vector<unsigned long long>> C(2, std::vector<unsigned long long>(2));
-    for (int i = 0; i < 2; ++i) {
-        for (int j = 0; j < 2; ++j) {
-            C[i][j] = 0;
-            for (int k = 0; k < 2; ++k) {
-                C[i][j] += A[i][k] * B[k][j];
-            }
-        }
-    }
-    return C;
-}
+#include <cstdlib>
+#include <chrono>
+#include <algorithm>
 
-// 矩阵快速幂
-std::vector<std::vector<unsigned long long>> matrixPower(
-    std::vector<std::vector<unsigned long long>> base, int exp) {
-    std::vector<std::vector<unsigned long long>> result = {{1, 0}, {0, 1}};
-    while (exp > 0) {
-        if (exp % 2 == 1) {
-            result = matrixMultiply(result, base);
-        }
-        base = matrixMultiply(base, base);
-        exp /= 2;
-    }
-    return result;
-}
+using namespace std;
+using namespace std::chrono;
 
-// 使用矩阵快速幂计算斐波那契数列的第 n 个数
-unsigned long long FibonacciMatrix(int n) {
-    if (n <= 1) {
-        return n;
+class RandomGenerator {
+public:
+    int randInt(int i, int j) {
+        return i + rand() % (j - i + 1);
     }
-    std::vector<std::vector<unsigned long long>> base = {{1, 1}, {1, 0}};
-    std::vector<std::vector<unsigned long long>> result = matrixPower(base, n - 1);
-    return result[0][0];
+};
+
+double generatePermutation3(int* a, RandomGenerator& r, int N) {
+    auto start = high_resolution_clock::now();
+    
+    for (int i = 0; i < N; ++i) {
+        a[i] = i + 1;
+    }
+    
+    for (int i = 1; i < N; ++i) {
+        swap(a[i], a[r.randInt(0, i)]);
+    }
+    
+    auto stop = high_resolution_clock::now();
+    auto duration = duration_cast<microseconds>(stop - start);
+    return duration.count();
 }
 
 int main() {
-    int n = 100; // 计算第 100 个斐波那契数
-    unsigned long long result = FibonacciMatrix(n);
-    std::cout << "Fibonacci number " << n << " is " << result << std::endl;
+    int N_values[] = {100000, 200000, 400000, 800000, 1600000, 3200000, 6400000};
+    int num_trials = 10;
+    
+    for (auto N : N_values) {
+        int* a = new int[N];
+        RandomGenerator r;
+        
+        double total_time = 0;
+        for (int trial = 0; trial < num_trials; ++trial) {
+            total_time += generatePermutation3(a, r, N);
+        }
+        
+        cout << "Algorithm 3, N = " << N << ", Average Time: " << total_time / num_trials << " microseconds" << endl;
+        delete[] a;
+    }
+    
     return 0;
 }
