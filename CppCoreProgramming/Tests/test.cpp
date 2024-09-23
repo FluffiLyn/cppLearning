@@ -1,50 +1,110 @@
 #include <iostream>
-#include <cstdlib>
-#include <chrono>
-#include <algorithm>
-
-using namespace std;
-using namespace std::chrono;
-
-class RandomGenerator {
+template <typename T>
+class singleList
+{
 public:
-    int randInt(int i, int j) {
-        return i + rand() % (j - i + 1);
+    singleList(): head(nullptr) {}
+    ~singleList()
+    {
+        erase();
     }
-};
 
-double generatePermutation3(int* a, RandomGenerator& r, int N) {
-    auto start = high_resolution_clock::now();
-    
-    for (int i = 0; i < N; ++i) {
-        a[i] = i + 1;
-    }
-    
-    for (int i = 1; i < N; ++i) {
-        swap(a[i], a[r.randInt(0, i)]);
-    }
-    
-    auto stop = high_resolution_clock::now();
-    auto duration = duration_cast<microseconds>(stop - start);
-    return duration.count();
-}
-
-int main() {
-    int N_values[] = {100000, 200000, 400000, 800000, 1600000, 3200000, 6400000};
-    int num_trials = 10;
-    
-    for (auto N : N_values) {
-        int* a = new int[N];
-        RandomGenerator r;
-        
-        double total_time = 0;
-        for (int trial = 0; trial < num_trials; ++trial) {
-            total_time += generatePermutation3(a, r, N);
+    int size() const
+    {
+        int count = 0;
+        Node* current = head;
+        while(current)
+        {
+            count++;
+            current = current->next;
         }
-        
-        cout << "Algorithm 3, N = " << N << ", Average Time: " << total_time / num_trials << " microseconds" << endl;
-        delete[] a;
+        return count;
     }
-    
-    return 0;
-}
+
+    void print() const
+    {
+        Node* current = this->head;
+        while (current)
+        {
+            std::cout << current->data << " ";
+            current = current->next;
+        }
+        std::cout << std::endl;
+    }
+
+    bool contains(const T& x) const
+    {
+        Node* current = head;
+        while (current)
+        {
+            if (current->data == x)
+            {
+                return true;
+            }
+            current = current->next;
+        }
+        return false;
+    }
+
+    bool add(const T& x)
+    {
+        if(contains(x))
+        {
+            return false;
+        }
+        else
+        {
+            // 将新节点插入头节点的next位置
+            // 形成一个头插法的单链表
+            Node* newNode = new Node(x);
+            newNode->next = head->next;
+            head->next = newNode;
+            _size++;
+        }
+        return true;
+    }
+
+    bool remove(const T& x)
+    {
+        if (!contains(x))
+        {
+            return false;
+        }
+        else 
+        {
+            Node* current = head->next;// 从头节点的next开始查找
+            Node* prev = nullptr;
+            while(current->data != x)
+            {
+                prev = current;
+                current = current->next;
+            }
+            prev->next = current->next;
+            delete current;
+            _size--;
+
+            return true;
+        }
+    }
+
+    void erase()// 将析构函数中的代码另作为一个函数
+    {
+        Node* current = head;
+        while (current)
+        {
+            Node* next = current->next;
+            delete current;
+            current = next;
+        }
+    }
+
+private:
+    struct Node
+    {
+        T _data;
+        Node* next;
+        Node(const T& data): _data(data), next(nullptr) {}
+    };
+    Node* head;
+    int _size;
+};

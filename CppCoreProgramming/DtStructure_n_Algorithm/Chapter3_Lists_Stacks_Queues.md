@@ -747,3 +747,166 @@ Queue are **lists**.
 ### 3.7.1 Queue Model
 * enqueue
 * dequeue
+
+### 3.7.2 List Implement of Queue
+自己写的。
+```c++
+#include <iostream>
+#include <stdexcept>
+
+// 定义节点结构体
+struct Node 
+{
+    int data;
+    Node* next;
+};
+
+// 定义队列类
+class Queue 
+{
+public:
+    Queue() : front(nullptr), back(nullptr) {}
+
+    // 入队操作
+    void enqueue(int value) 
+    {
+        Node* newNode = new Node();
+        newNode->data = value;
+        newNode->next = nullptr;
+        if (back != nullptr) // 队列非空
+        {
+            back->next = newNode;
+        }
+        back = newNode;
+        if (front == nullptr) // 队列为空
+        {
+            front = back;
+        }
+    }
+
+    // 出队操作
+    void dequeue() 
+    {
+        if (isEmpty()) 
+        {
+            throw std::out_of_range("Queue is empty");
+        }
+        // 暂时保存头节点
+        Node* temp = front;
+        int value = temp->data;
+        front = front->next;
+        if (front == nullptr)// 队列为空 
+        {
+            back = nullptr;
+        }
+        delete temp;
+        return value;
+    }
+
+    bool isEmpty() const 
+    {
+        return front == nullptr;
+    }
+
+    int getFront() const 
+    {
+        if (isEmpty()) 
+        {
+            throw std::out_of_range("Queue is empty");
+        }
+        return front->data;
+    }
+
+    ~Queue() 
+    {
+        while (!isEmpty()) 
+        {
+            dequeue();
+        }
+    }
+
+private:
+    Node* front;
+    Node* back;
+};
+```
+
+### 3.7.3 Array Implement of Queue
+```c++
+#include <iostream>
+#include <stdexcept>
+
+class Queue 
+{
+public:
+    // 初始化队列的容量、前端索引、后端索引和当前大小。
+    // 动态分配一个数组来存储队列元素。
+    Queue(int capacity) : capacity(capacity), front(0), back(-1), size(0) 
+    {
+        array = new int[capacity];
+    }
+
+    // 入队操作
+    void enqueue(int value) 
+    {
+        if (isFull()) 
+        {
+            throw std::overflow_error("Queue is full");
+        }
+        back = (back + 1) % capacity;
+        array[back] = value;
+        size++;
+    }
+
+    // 出队操作（假设data是整数）
+    int dequeue() 
+    {
+        if (isEmpty()) 
+        {
+            throw std::out_of_range("Queue is empty");
+        }
+        int value = array[front];
+        front = (front + 1) % capacity;
+        size--;
+        return value;
+    }
+
+    // 获取队列前端元素
+    int getFront() const 
+    {
+        if (isEmpty()) 
+        {
+            throw std::out_of_range("Queue is empty");
+        }
+        return array[front];
+    }
+
+    // 检查队列是否为空
+    bool isEmpty() const 
+    {
+        return size == 0;
+    }
+
+    // 检查队列是否已满
+    bool isFull() const 
+    {
+        return size == capacity;
+    }
+
+    // 析构函数，释放数组内存
+    ~Queue() 
+    {
+        delete[] array;
+    }
+
+private:
+    int* array;
+    int capacity;
+    int front;
+    int back;
+    int size;
+};
+```
+
+### 3.7.4 Application of Queues
+File server.
