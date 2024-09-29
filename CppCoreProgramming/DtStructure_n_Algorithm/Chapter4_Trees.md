@@ -143,7 +143,11 @@ void inOrder(TreeNode *node)
    * 满二叉树$\Rightarrow$完全二叉树
    * 完全二叉树$\nRightarrow$满二叉树
 
-### 4.2.2 二叉搜索树（Binary Search Tree）
+### 4.2.2 Binary Search Tree 二叉搜索树
+概念：二叉搜索树（Binary Search Tree，简写BST）的任何一个节点的**左子树**上的点，都必须**小于**当前节点。任何一个节点的**右子树**上的点，都必须**大于**当前节点。所有的子树也必须满足上面两个条件。
+
+二叉搜索树上的基本操作所花费的时间与这棵树的高度成正比。对于一个有 n 个结点的二叉搜索树中，这些操作的最优时间复杂度为 O(\log n)，最坏为 O(n)。随机构造这样一棵二叉搜索树的期望高度为 O(\log n)。
+
 ```c++
 //Binary search tree class skeleton
 template <typename Comparable>
@@ -267,3 +271,140 @@ void insert(Comparable &&x, BinaryNode *&t)
 }
 ```
 当我们不再需要x时，可以用右值引用将其值移动到新节点中，而不是复制。
+
+#### remove
+许多数据结构最困难的操作是删除。删除一个节点可能会导致树的结构发生变化，因此需要小心处理。
+1. 如果节点是树叶，可以直接删除。
+2. 如果节点有一个子节点，可以用子节点替换该节点。
+![删除节点](pics/屏幕截图%202024-09-23%20164440.png)
+
+3. 如果节点有两个子节点：（一般策略：）
+    * 找到右子树的最左子节点（也即右子树 中序遍历 的第一个节点）
+    * 将它的值与要删除的节点的值交换
+    * 删除右子树的最左子节点，相当于删除了我们要删除的节点
+
+
+为什么要找右子树的最左子节点？
+1. 保持二叉搜索树的性质
+    * 用这个节点的值替换要删除节点的值，可以确保替换后的树仍然满足二叉搜索树的性质。因为这个节点是右子树的最小值，所以它的值大于左子树的所有节点，小于右子树的所有节点。
+2. 简化删除操作
+    * 右子树的最左子节点没有左子节点（否则它就不是最左子节点），这使得删除这个节点变得简单。
+    * 删除这个节点只需要调整它的父节点的指针，而不需要处理复杂的子树重组。
+
+```c++
+// x is the item to remove.
+// t is the node that roots the subtree.
+void remove(const Comparable &x, BinaryNode *&t)
+{
+    // 判空
+    if (t == nullptr)
+        return;
+    // 递归查找 
+    if (x < t->element)
+        remove(x, t->left);
+    else if (t->element < x)
+        remove(x, t->right);
+    // 两个子节点的情况
+    else if (t->left != nullptr && t->right != nullptr)
+    {
+        t->element = findMin(t->right)->element;
+        remove(t->element, t->right);
+    }
+    // 处理有一个或零个子节点的情况
+    else
+    {
+        BinaryNode *oldNode = t;
+        t = (t->left != nullptr) ? t->left : t->right;
+        delete oldNode;
+    }
+}
+```
+
+#### Destructor and Copy Constructor
+Destructor
+```c++
+~BinarySearchTree()
+{
+    makeEmpty();
+}
+void makeEmpty(BinaryNode *&t)
+{
+    if (t != nullptr)
+    {
+        makeEmpty(t->left);
+        makeEmpty(t->right);
+        delete t;
+    }
+    t = nullptr;
+}
+```
+
+Copy Constructor
+```c++
+BinarySearchTree(const BinarySearchTree &rhs): root{nullptr}
+{
+    root = clone(rhs.root);
+}
+BinaryNode *clone(BinaryNode *t) const
+{
+    if (t == nullptr)
+        return nullptr;
+    else
+        return new BinaryNode{t->element, clone(t->left), clone(t->right)};
+}
+```
+
+#### 时间复杂度分析
+二叉树预期的时间复杂度是$O(logN)$。
+
+* 令D(N)为具有N个节点的某棵树的**内部路径长**（所有节点的深度之和），D(1)=0。一颗N节点树是由一颗**i个节点左子树**和一颗**(N-i-1)个节点右子树**以及深度0处的一个根节点组成的，其中$0\leq i < N$。
+
+* 左子树和右子树的**所有节点**在原树中的深度都比它们在子树中的深度**多1**。因此，
+  * 左子树的每个节点的深度增加1，总共增加(i)次。
+  * 右子树的每个节点的深度增加1，总共增加(N-i-1)次。
+
+* 左子树的内部路径长为D(i)，加上每个节点深度增加的(i)次，**总共为(D(i)+i)**。
+* 右子树的内部路径长为D(N-i-1)，加上每个节点深度增加的(N-i-1)次，**总共为(D(N-i-1)+(N-i-1))**。
+
+因此，我们有递推关系：$D(N)=(D(i)+i)+(D(N-i-1)+(N-i-1))$
+
+化简得$D(N) = D(i) + D(N-i-1)+N-1$
+
+如果所有子树是等概率的（对二叉查找树是成立的，但二叉树不一定），那么我们可以得到：
+D(i)和D(N-i-1)的平均值都是$\displaystyle\frac{1}{N}\sum_{j=0}^{N-1}D(j)$，因此：
+
+* $D(N)=2\displaystyle\frac{1}{N}\sum_{j=0}^{N-1}D(j)+N-1$（在第七章会求解）
+
+得到$D(N)=O(NlogN)$
+
+#### 二叉搜索树的平衡
+然而，二叉搜索树的相关操作平均运行时间不一定一直是O(logN)。原因在于**删除操作**。之前所写的删除算法会导致左子树比右子树更深，这是因为我们总是选择右子树的最小节点来替换要删除的节点。这样会导致树的高度增加，从而使得查找操作的时间复杂度增加。最终，二叉搜索树可能会退化为链表，时间复杂度变为O(N)。
+
+如果交替插入和删除$\Theta(N^2)$次，那么树期望的深度是$\sqrt\Theta(N)$。
+
+平衡的方法：
+1. 用一些算法实现平衡查找树，如AVL树。
+2. 放弃平衡，使用自调整类的数据结构，如伸展树（splay tree）。
+
+## 4.3 AVL树
+AVL（Adelson-Velsky and Landis）树是一种自平衡二叉搜索树。在AVL树中，任何节点的左右子树的**高度最多相差1**。空树的高度定义为**-1**。如果在插入或删除节点后，树的高度差超过1，那么需要通过旋转操作来重新平衡树。
+
+![AVL树](pics/屏幕截图%202024-09-27%20165350.png)
+
+在高度为h的AVL树中，最少的节点数是$S(h)=S(h-1)+S(h-2)+1,(h\geq 2)$，并且$S(0)=1,S(1)=2$。也即：左子树（每个节点都只有一个左子树）节点+右子树（每个节点都只有一个右子树）节点+ 根节点。
+
+当插入一个节点后，可能会导致AVL树失去平衡。为了重新平衡树，我们需要通过**旋转**操作来调整树的结构。不平衡的情况有四种：
+1. 左子树的左子树插入（LL）
+2. 左子树的右子树插入（LR）
+3. 右子树的左子树插入（RL）
+4. 右子树的右子树插入（RR）
+
+1,4的情况是插入发生在“外边”的情况，用单旋转；
+
+2,3的情况是插入发生在“内部”的情况，用双旋转。
+
+### 4.3.1 单旋转
+图片可参考https://zhuanlan.zhihu.com/p/338160960
+
+情况一：RR型，进行左旋转
+
