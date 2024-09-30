@@ -406,5 +406,103 @@ AVL（Adelson-Velsky and Landis）树是一种自平衡二叉搜索树。在AVL�
 ### 4.3.1 单旋转
 图片可参考https://zhuanlan.zhihu.com/p/338160960
 
-情况一：RR型，进行左旋转
+情况一：RR型，进行左旋转。
 
+右子树比左子树高，则树根4向左下移，根节点的右子节点6向上移，成为新的根节点，使得左右子树高度平衡。
+
+详细过程：
+* 根节点4**复制**出一个新的节点，将其**右指针**指向节点5（原根节点的右子节点的左子节点）。
+* 将原根节点的右子节点6的**左指针**指向新的节点4，则节点6成为新的根节点。
+
+情况二：LL型，进行右旋转。
+
+与RR型对称
+
+### 4.3.2 双旋转
+情况一：LR型，先左旋转，再右旋转。
+
+* 先把**根节点的左子树（节点5）**进行左旋转，降低节点5的右子树的高度
+* 再将**根节点**进行右旋转，达到平衡效果。
+
+情况二：RL型，先右旋转，再左旋转。
+
+### 4.3.3 AVL树代码实现
+AVL树节点
+```c++
+struct AvlNode
+{
+    Comparable element;
+    AvlNode* left;
+    AVlNode* right;
+    int height;
+
+    AvlNode(const Comparable& ele, AvlNode* lt, AvlNode* rt, int h = 0): element{ele}, left{lt}, right{rt},height{h}{}
+
+    AvlNode(const Comparable& ele, AvlNode* lt, AvlNode* rt, int h = 0): element{std::move(ele)}, left{lt}, right{rt},height{h}{}
+}
+```
+
+获取高度
+```c++
+int height(AvlNode *t) const
+{
+    return t == nullptr ? -1 : t->height;
+}
+```
+
+插入与平衡
+```c++
+// x is the item to insert
+void insert(const Comparable& x, AvlNode*& t)
+{
+    if (t == nullptr)
+        t = new AvlNode{x,nullptr,nullptr};
+    else if (x < t->element)
+        insert(x, t->left)
+    else if (x > t->element)
+        insert(x, t->right)
+
+    balance(t);
+}
+
+void balance(AvlNode*& t)
+{
+    if(t == nullptr)
+        return;
+
+    // ALLOWED_IMBALANCE = 1
+    if(height(t->left) - height(t->right) > ALLOWED_IMBALANCE)
+    {
+        // 左子树比右子树高，需要右旋或者双旋处理
+        if (height(t->left->left) >= height(t->left->right))
+            // LL型不平衡：直接对节点进行右旋转
+            rotateWithLeftChild(t);
+        else
+            // LR型不平衡：先对左子节点左旋，再对当前节点右旋
+            doubleWithLeftChild(t);
+    }
+    else if (height(t->right) - height(t->left) > ALLOWED_IMBALANCE)
+    {
+        // 右子树比左子树高，需要左旋或者双旋处理
+        if (height(t->right->right) >= height(t->right->left))
+            // RR型不平衡：直接对节点进行左旋转
+            rotateWithRightChild(t);
+        else
+            // RL型不平衡：先对右子节点右旋，再对当前节点左旋
+            doubleWithRightChild(t);
+    }
+
+    // 更新节点的高度信息
+    t->height = max(height(t->left),height(t->right)) + 1;
+}
+```
+
+单旋转-左旋转
+```c++
+
+void rotateWithLeftChild(AvlNode*& k2)
+{
+    AvlNode* k1 = k2->left;
+    
+}
+```
