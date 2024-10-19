@@ -1,4 +1,4 @@
-## Chapter5 Hashing
+## Chapter 5: Hashing
 哈希表（hash table），也称散列表，是一种数据结构，用于存储键值对（key-value pair）。
 
 * 哈希函数：每个键被映射到0~TableSize-1的一个整数，这个整数称为哈希值（hash value），这个映射称为哈希函数（hash function）。

@@ -1,4 +1,4 @@
-## Chapter 6 Priority Queues(Heaps)
+## Chapter 6: Priority Queues(Heaps)
 
 ### 6.1 Model
 优先队列是一种特殊的队列，其中每个元素都有一个优先级。优先级最高的元素最先出队。
