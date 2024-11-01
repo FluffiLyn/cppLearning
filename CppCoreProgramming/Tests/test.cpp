@@ -1,79 +1,42 @@
-#include <iostream>
 #include <vector>
-#include <queue>
-#include <algorithm>
-#include <chrono>
+#include <iostream>
 
 using namespace std;
 
-// 逐个插入元素到堆中
-void insertToHeap(vector<int>& arr) 
+vector<double> calculateAmplitudes(const vector<double>& data)
 {
-    priority_queue<int, vector<int>, greater<int>> minHeap;
-    for (int value : arr) {
-        minHeap.push(value);
+    vector<double> amplitudes;
+    for (double value : data)
+    {
+        amplitudes.push_back(value / 200);
     }
+    return amplitudes;
 }
 
-// 线性时间建立堆
-void buildHeap(vector<int>& arr) {
-    make_heap(arr.begin(), arr.end(), greater<int>());
-}
-
-// 测试运行时间的函数
-void testHeapPerformance(vector<int>& arr) 
+int main()
 {
-    // 测试逐个插入法
-    auto start = chrono::high_resolution_clock::now();
-    insertToHeap(arr);
-    auto end = chrono::high_resolution_clock::now();
-    chrono::duration<double> elapsed = end - start;
-    cout << "逐个插入法耗时: " << elapsed.count() << "秒" << endl;
+    vector<double> data;
+    double input;
+    int n;
 
-    // 测试线性时间建立堆
-    start = chrono::high_resolution_clock::now();
-    buildHeap(arr);
-    end = chrono::high_resolution_clock::now();
-    elapsed = end - start;
-    cout << "线性时间建立堆耗时: " << elapsed.count() << "秒" << endl;
-}
+    cout << "Enter the number of data points: ";
+    cin >> n;
 
-int main() 
-{
-    int N;
-    cout << "请输入元素个数 N: ";
-    cin >> N;
-
-    vector<int> sortedArray(N);
-    vector<int> reversedArray(N);
-    vector<int> randomArray(N);
-
-    // 初始化已排序数组
-    for (int i = 0; i < N; i++) {
-        sortedArray[i] = i;
+    cout << "Enter the data points:" << endl;
+    for (int i = 0; i < n; ++i)
+    {
+        cin >> input;
+        data.push_back(input);
     }
 
-    // 初始化反序数组
-    for (int i = 0; i < N; i++) {
-        reversedArray[i] = N - i - 1;
+    vector<double> amplitudes = calculateAmplitudes(data);
+
+    cout << "Amplitudes:" << endl;
+    for (double amplitude : amplitudes)
+    {
+        cout << amplitude << " ";
     }
-
-    // 初始化随机数组
-    for (int i = 0; i < N; i++) {
-        randomArray[i] = rand() % 100; // 随机数范围 0-99
-    }
-
-    // 测试已排序数组
-    cout << "已排序数组：" << endl;
-    testHeapPerformance(sortedArray);
-
-    // 测试反序数组
-    cout << "反序数组：" << endl;
-    testHeapPerformance(reversedArray);
-
-    // 测试随机数组
-    cout << "随机数组：" << endl;
-    testHeapPerformance(randomArray);
+    cout << endl;
 
     return 0;
 }

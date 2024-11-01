@@ -123,10 +123,11 @@ void selection_sort(int* a, int n)
 
 性质：
 * 时间复杂度：
-  * 最优：$O(n)$
-  * 平均：取决于选区的间距序列
+  * 最优：$O(n^{1.3})$
+  * 平均：取决于选区的间距序列。若间距序列为$H= \{ k=2^p\cdot 3^q\mid p,q\in \mathbb N,k\le n \}$（从大到小），则希尔排序算法的平均时间复杂度为 O(n\log^2 n)。
 * 稳定性：不稳定
 
+实现：本例间距序列为$n/2,n/4,n/8,...,1$。
 ```c++
 void shellSort(int* a, int n) 
 {
@@ -290,18 +291,261 @@ void merge(vector<int>& a, vector<int>& tmpArray, int leftPos, int rightPos, int
 注：对于模板类型需要调用std::move()。
 
 ### 7.8 快速排序（Quick Sort）
-快速排序是一种分治的排序算法，它将一个数组分成两个子数组，将两部分独立地排序。
+快速排序是一种分治、递归的排序算法，它将一个数组分成两个子数组，将两部分独立地排序。和归并排序的区别是，第一步并不是直接分成前后两个序列，而是在分的过程中要保证相对大小关系，即第一步要是要把数列分成两个部分，然后保证前一个子数列中的数都小于后一个子数列中的数。
 
 步骤：
-1. 选择一个基准元素，将数列划分为两部分（要求保证相对大小关系）；
-2. 递归到两个子序列中分别进行快速排序；
-3. 不用合并，因为在划分的过程中已经排好序了。
+1. 如果数组中元素个数是0个或1个，则返回；
+2. 选择一个**基准元素（pivot）**，将剩余的元素分割为两部分（要求保证相对大小关系）；
+3. 递归到子序列中分别再次进行快速排序；
+4. 不用合并，因为在划分的过程中已经排好序了。
 
-和归并排序的区别是，第一步并不是直接分成前后两个序列，而是在分的过程中要保证相对大小关系。具体来说，第一步要是要把数列分成两个部分，然后保证前一个子数列中的数都小于后一个子数列中的数。为了保证平均时间复杂度，一般是随机选择一个数 m 来当做两个子数列的分界。
+
+细节：
+* 第二步的选择基准元素的方法有很多，成为一种设计决策。
 
 性质：
 * 时间复杂度：
   * 平均：$O(N \log N)$
   * 最坏情况：$O(N^2)$
 * 稳定性：不稳定
-* 是否原地排序：是
+* 是否原地排序：是（但是递归调用要使用辅助的栈空间，大小为$O(logN)$）
+* 适用于较大的数据集
+
+#### 选择基准元素
+错误做法1：选择第一个元素作为基准元素，如果数组是有序的，那么时间复杂度会退化为$O(N^2)$。
+
+错误做法2：随机选择一个元素作为基准元素。随机数生成器的开销很大。
+
+推荐做法：**三数中值分割法**（median-of-three partitioning）。
+* 选择第一个、中间一个、最后一个元素，取这三个元素的中位数作为基准元素。
+  * 例如：8,1,4,9,6,3,7,5,2,0，选择8,6,0，那么取6作为基准元素。
+
+#### 分割策略（不包含重复元素）
+书中给出的策略如下：
+1. 将pivot放在数组末尾（使其离开被分割的数据段）
+2. 维护两个指针i和j，i从左往右，j从右往左
+3. 当i在j的左边时：将i右移，找到一个大于pivot的元素，停止；将j左移，找到一个小于pivot的元素，停止。交换这两个元素。
+4. 持续第3步，直到i和j彼此交错。
+5. 将pivot与i指向的元素交换
+
+至此，我们完成了一次分割。直到分割的子数组大小小于某个阈值，我们就可以对子数组使用插入排序。
+
+#### 代码实现
+三数中值分割法：
+```c++
+const int& median3(vector<int>& a, int left, int right)
+{
+    int center = (left + right) / 2;
+    if (a[center] < a[left])
+    {
+        std::swap(a[left], a[center]);
+    }
+    if (a[right] < a[left])
+    {
+        std::swap(a[left], a[right]);
+    }
+    if (a[right] < a[center])
+    {
+        std::swap(a[center], a[right]);
+    }
+
+    //将pivot放在数组末尾
+    std::swap(a[center], a[right - 1]);
+    return a[right - 1];
+}
+```
+
+主程序：
+```c++
+void quickSort(vector<int>& a, int left, int right)
+{
+    //判断数组大小
+    if (left + 10 <= right)
+    {
+        //分割
+
+        int pivot = median3(a, left, right);
+        int i = left, j = right - 1;
+        for (;;)
+        {
+            while (a[i] < pivot) {++i;}
+            while (a[j] > pivot) {--j}
+            
+            if (i < j) std::swap(a[i], a[j]);
+            else break;
+        }
+        std::swap(a[i], a[right - 1]);//将pivot与i指向的元素交换
+        quickSort(a, left, i - 1);
+        quickSort(a, i + 1, right);
+    }
+    else
+    {
+        //插入排序处理小数组
+        insertSort(a, left, right);
+    }
+}
+```
+
+对外接口：
+```c++
+void quickSort(vector<int>& a)
+{
+    quickSort(a, 0, a.size() - 1);
+}
+```
+
+### 7.9 桶排序（Bucket Sort）
+桶排序运用分治思想，将数组分到有限数量的桶里，然后对每个桶进行排序，最后将所有桶合并。这是一种哈希的思想。
+
+步骤：
+1. 设置一个定量的数组当作空桶。（桶的数量的设定是算法设计的关键之一）
+2. 遍历待排序数组，并且把元素一个一个放到对应的桶中。
+3. 对每个非空的桶进行排序。
+4. 从非空的桶子里把元素再放回原来的序列中。
+
+性质：
+* 时间复杂度：$O(M+N)$（M是桶的数量，N是元素的数量）
+* 稳定性：稳定
+* 是否原地排序：否（使用了额外的数组）
+
+实现：
+```c++
+void bucketSort(vector<int>& a, int n)
+{
+    if (n <= 0) return;
+
+    // 找出数组中的最大值和最小值以确定桶的数量和范围
+    int max_Value = *max_element(a.begin(), a.end()); // 找出最大值
+    int min_Value = *min_element(a.begin(), a.end()); // 找出最小值
+
+    // 计算桶的大小和数量
+    int bucketSize = (max_Value - min_Value) / n + 1; // 桶的大小
+    int bucketCount = (max_Value - min_Value) / bucketSize + 1; // 桶的个数
+
+    // 创建桶
+    vector<vector<int>> buckets(bucketCount);
+
+    // 利用整数除法，确定 a[i] 放入哪个桶中
+    // a[i] - min_Value 是为了保证桶的下标不会小于0
+    for (int i = 0; i < n; i++) {
+        int bucketIndex = (a[i] - min_Value) / bucketSize;
+        buckets[bucketIndex].push_back(a[i]);
+    }
+
+    // 对每个非空桶进行排序
+    for (int i = 0; i < buckets.size(); ++i) 
+    {
+        if (!buckets[i].empty())
+        {
+            std::sort(buckets[i].begin(), buckets[i].end());
+        }
+    }
+    
+    // 将各个桶中的元素合并
+    int index = 0;
+    for (int i = 0; i < buckets.size(); ++i)
+    {
+        for (int j = 0; j < buckets[i].size(); ++j) 
+            a[index++] = buckets[i][j];
+    }
+}
+```
+其中，`max_element`和`min_element`在`<algorithm>`头文件中，返回的是迭代器。
+### 7.10 基数排序（Radix Sort）
+参考：[基数排序](https://zhuanlan.zhihu.com/p/126116878)
+
+基数排序是一种非比较型整数排序算法，将整数按**位数**切割成不同的数字，然后按每个位数分别比较。其中基数指的是进制的基数，比如十进制的基数是10，二进制的基数是2。
+
+根据排序的顺序，基数排序可以分为**LSD（Least Significant Digit）**（从最低位开始）和**MSD（Most Significant Digit）**（从最高位开始）。
+
+步骤：（以LSD为例）
+1. 将所有待比较数值（正整数）统一为同样的数位长度，数位较短的数前面补零。
+2. 从最低位开始，按位依次进行一次排序。
+3. 从最低位排序一直到最高位排序完成以后，数列就变成一个有序序列。
+
+性质：
+* 时间复杂度：$O(k(n+b))$（k是最大数的位数，n是元素个数，b是桶数）
+  * 简化为$O(k*n)$
+* 稳定性：稳定
+* 是否原地排序：否（需要额外的空间）
+
+实现：
+```c++
+void radixSort(vector<int>& a)
+{
+    //找出最大值
+    int maxVal = *max_element(a.begin(), a.end());
+    int maxDigit = 0;
+    while (maxVal)
+    {
+        maxVal /= 10;
+        ++maxDigit;
+    }
+
+    //创建桶
+    vector<vector<int>> buckets(10);
+
+    //按位数进行排序
+    for (int i = 0, mod = 10, div = 1; i < maxDigit; ++i, mod *= 10, div *= 10)
+    {
+        for (int j = 0; j < a.size(); ++j)
+        {
+            int bucketIndex = (a[j] % mod) / div;
+            buckets[bucketIndex].push_back(a[j]);
+        }
+
+        //将桶中的元素放回原数组
+        int index = 0;
+        for (int j = 0; j < buckets.size(); ++j)
+        {
+            for (int k = 0; k < buckets[j].size(); ++k)
+            {
+                a[index++] = buckets[j][k];
+            }
+        }
+
+        buckets.clear();
+    }
+}
+```
+
+### 总结
+|**排序算法**| 平均时间复杂度| 最好情况 | 最坏情况 | 空间复杂度 | 排序方式 | 稳定性 |
+|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+|冒泡排序| $O(n^2)$ | $O(n)$ | $O(n^2)$ | $O(1)$ | In-place | 稳定 |
+|插入排序| $O(n^2)$ | $O(n)$ | $O(n^2)$ | $O(1)$ | In-place | 稳定 |
+|选择排序| $O(n^2)$ | $O(n^2)$ | $O(n^2)$ | $O(1)$ | In-place | 不稳定 |
+|希尔排序| $O(n\log n)$ | $O(n^{1.3})$ | $O(n\log^2 n)$ | $O(1)$ | In-place | 不稳定 |
+|堆排序| $O(n\log n)$ | $O(n\log n)$ | $O(n\log n)$ | $O(1)$ | In-place | 不稳定 |
+|归并排序| $O(n\log n)$ | $O(n\log n)$ | $O(n\log n)$ | $O(n)$ | Out-place | 稳定 |
+|快速排序| $O(n\log n)$ | $O(n\log n)$ | $O(n^2)$ | $O(\log n)$ | In-place | 不稳定 |
+|桶排序| $O(n+k)$ | $O(n+k)$ | $O(n^2)$ | $O(n+k)$ | Out-place | 稳定 |
+|基数排序| $O(k(n+b))$ | $O(k(n+b))$ | $O(k(n+b))$ | $O(n+b)$ | Out-place | 稳定 |
+|计数排序| $O(n+k)$ | $O(n+k)$ | $O(n+k)$ | $O(k)$ | Out-place | 稳定 |
+
+计数排序略。
+
+### 7.11 决策树与下界证明
+决策树是用于证明下界的抽象概念。决策树是一种二叉树：每个节点代表元素之间一组可能的排序。
+* 根节点：最初始判定的属性，判定区域是全局的数据集；
+* 内部节点：中间的判定属性，判定区域是符合某些特征的子数据集；
+* 叶子节点：决策结果，位于决策树的最底层，每个叶子节点都是一个决策结果。
+
+一个**比较**排序算法可以被视为一个决策树，每一个叶子节点对应一个排列（permutation）。证明一个排序算法的下界，就是证明决策树的高度。
+
+性质：
+1. 一个n个节点的决策树高度是$\Omega (\log n)$
+  * 回顾：$\Omega(n)$ 表示 $T(N) \geq c  f(N)$，
+2. 对n个元素排序的决策树有n!片叶子节点，那么只使用元素间比较的任何排序算法均需要$\Omega (\log n!)=\Omega(n\log n)$次比较。
+   * 证明：$\log (n!)=\log (n(n-1)...(2)(1))\\=\log n+\log(n-1)+...+\log 2+\log 1\\\geq \frac{n}{2}\log \frac{n}{2}\\\geq \frac{n}{2}\log n - \frac{n}{2}log2\\=\Omega(n\log n)$
+
+### 7.12 外部排序（External Sorting）
+**期末几乎不考**
+
+外部排序是指数据量太大，无法一次性载入内存，需要借助外存（硬盘）进行排序，不是一种排序算法，而是一种排序策略。
+
+#### 文件处理的黄金准则
+* 一次性读取尽可能多的数据，**减少I/O次数**
+
+#### 一些概念
+* 
