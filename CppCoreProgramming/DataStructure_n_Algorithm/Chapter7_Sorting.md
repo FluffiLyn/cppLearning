@@ -62,7 +62,7 @@ void BubbleSort(int A[], int n)
 //以下标1开始排序
 void insertSort(vector<Comparable>& v)
 {
-    for (int p = 1; p < v.size(); ++p)
+    for (int p = 1; p <= v.size() - 1; ++p)
     {
         Comparable tmp = std::move(v[p]);
         int j;
@@ -151,11 +151,15 @@ void shellSort(int* a, int n)
 图示：![希尔排序](https://pica.zhimg.com/80/v2-7ef755d2b04f11cb013acb47f10928cc_720w.webp)
 
 ### 7.6 堆排序（Heap Sort）
-我们使用最大堆来进行升序排序，使用小顶堆来进行降序排序。
+我们使用最大堆来进行升序排序，使用最小堆来进行降序排序。
 
-步骤（以最大堆为例）：
+步骤（以升序排序为例）：
 1. 创建一个最大堆
-2. DeleteMax() N次，返回每个最大值并存储在数组末尾
+   * 从最后一个**非叶子节点**（i = n / 2 - 1 ）开始循环，i--，直到根节点（i = 0），对每个节点进行下滤操作：
+     * 获取左子节点的下标，然后比较左右子节点的大小，选择**较大的子节点**
+     * 如果选中的子节点大于父节点，则交换父子节点的值，并令i指向子节点，继续下滤操作
+
+2. DeleteMax() N次，将堆顶元素与最后一个未排序的元素交换，然后对堆顶进行下滤操作。
 （记住不是存储在“堆栈”的“堆”中，而是存储在堆数组中）
 
 性质：
@@ -168,21 +172,6 @@ void shellSort(int* a, int n)
 
 实现：（int可以替换为任何Comparable类型）
 ```c++
-void heapSort(vector<int>& a)
-{
-    //构建最大堆
-    for (int i = a.size() / 2 - 1; i >= 0; --i)
-    {
-        percDown(a, i, a.size());
-    }
-    //删除最大值
-    for (int j = a.size() - 1; j > 0; --j)
-    {
-        std::swap(a[0], a[j]);
-        percDown(a, 0, j);
-    }
-}
-
 //返回左孩子的下标
 //内联的目的是减少函数调用的开销
 inline int leftChild(int i)
@@ -195,8 +184,11 @@ void percDown(vector<int>& a, int i, int n)
 {
     int child;
     int tmp;
+
+    //每执行一次循环，都会获取交换前的子节点的下标
     for (tmp = std::move(a[i]); leftChild(i) < n; i = child)
     {
+        //获取左孩子的下标
         child = leftChild(i);
         //如果右子节点存在，且右子节点大于左子节点，则选择右子节点
         if (child != n - 1 && a[child] < a[child + 1])
@@ -213,10 +205,25 @@ void percDown(vector<int>& a, int i, int n)
     }
     a[i] = std::move(tmp);
 }
+
+void heapSort(vector<int>& a)
+{
+    //构建最大堆
+    for (int i = a.size() / 2 - 1; i >= 0; --i)
+    {
+        percDown(a, i, a.size());
+    }
+    //删除最大值
+    for (int j = a.size() - 1; j > 0; --j)
+    {
+        std::swap(a[0], a[j]);
+        percDown(a, 0, j);
+    }
+}
 ```
 
 ### 7.7 归并排序（Merge Sort）
-运用了**分治（divide and conquer）**思想。
+运用了 **分治（divide and conquer）** 思想。
 
 步骤：
 1. 将n个元素分成个含n/2个元素的子序列。
@@ -317,18 +324,18 @@ void merge(vector<int>& a, vector<int>& tmpArray, int leftPos, int rightPos, int
 错误做法2：随机选择一个元素作为基准元素。随机数生成器的开销很大。
 
 推荐做法：**三数中值分割法**（median-of-three partitioning）。
-* 选择第一个、中间一个、最后一个元素，取这三个元素的中位数作为基准元素。
+* 选择第一、中间、最后一个元素，取这三个元素的**中位数**作为基准元素。然后，对这三个元素进行排序，最小的放最左侧，次小的放中间，最大的放最右侧。
   * 例如：8,1,4,9,6,3,7,5,2,0，选择8,6,0，那么取6作为基准元素。
 
 #### 分割策略（不包含重复元素）
 书中给出的策略如下：
-1. 将pivot放在数组末尾（使其离开被分割的数据段）
-2. 维护两个指针i和j，i从左往右，j从右往左
+1. 利用三数中值分割法，选择基准元素pivot
+2. 维护两个指针i和j，i从left往右，j从right-1往左
 3. 当i在j的左边时：将i右移，找到一个大于pivot的元素，停止；将j左移，找到一个小于pivot的元素，停止。交换这两个元素。
 4. 持续第3步，直到i和j彼此交错。
 5. 将pivot与i指向的元素交换
 
-至此，我们完成了一次分割。直到分割的子数组大小小于某个阈值，我们就可以对子数组使用插入排序。
+至此，我们完成了一次分割。直到left - right**小于等于**某个阈值，我们就可以对子数组使用插入排序。
 
 #### 代码实现
 三数中值分割法：
@@ -349,7 +356,7 @@ const int& median3(vector<int>& a, int left, int right)
         std::swap(a[center], a[right]);
     }
 
-    //将pivot放在数组末尾
+    //将pivot放在right-1处
     std::swap(a[center], a[right - 1]);
     return a[right - 1];
 }
@@ -359,7 +366,7 @@ const int& median3(vector<int>& a, int left, int right)
 ```c++
 void quickSort(vector<int>& a, int left, int right)
 {
-    //判断数组大小
+    //假设阈值为10，当剩余元素<=10时，使用插入排序
     if (left + 10 <= right)
     {
         //分割
@@ -368,10 +375,13 @@ void quickSort(vector<int>& a, int left, int right)
         int i = left, j = right - 1;
         for (;;)
         {
-            while (a[i] < pivot) {++i;}
-            while (a[j] > pivot) {--j}
+            while (a[++i] < pivot) {}
+            while (a[--j] > pivot) {}
             
-            if (i < j) std::swap(a[i], a[j]);
+            if (i < j) 
+            {
+                std::swap(a[i], a[j]);
+            }
             else break;
         }
         std::swap(a[i], a[right - 1]);//将pivot与i指向的元素交换
@@ -393,6 +403,22 @@ void quickSort(vector<int>& a)
     quickSort(a, 0, a.size() - 1);
 }
 ```
+
+#### 对for循环的分析
+对于上文的写法：
+```c++ 
+while (a[++i] < pivot) {}
+while (a[--j] > pivot) {}
+```
+这种写法会先将i或j移动一次，然后再进行比较。
+
+如果写成下面的形式：
+```c++
+while (a[i] < pivot) {++i;}
+while (a[j] > pivot) {--j;}
+```
+当a[i]=a[j]=pivot时，第二种写法会无限循环。因此，第一种写法是正确的。
+
 
 ### 7.9 桶排序（Bucket Sort）
 桶排序运用分治思想，将数组分到有限数量的桶里，然后对每个桶进行排序，最后将所有桶合并。这是一种哈希的思想。
