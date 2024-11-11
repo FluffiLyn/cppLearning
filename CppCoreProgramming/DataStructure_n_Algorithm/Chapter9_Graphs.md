@@ -83,3 +83,149 @@ $$2|E|=\sum_{v\in V}deg(v)$$
   * 简写为$O(|V|+|E|)$
 
 ### 9.4 拓扑排序（topological sort）
+拓补排序是将所有顶点按照先后顺序排列。（有向无环图）
+
+（有环图中的环的入度均不为0，无法进行拓扑排序）
+
+步骤：
+1. 每次选择一个**入度为0**的顶点，然后**删除**这个**点**和它的**出边**。
+
+性质：
+* 拓扑排序不唯一。（有多个入度为0的顶点时）
+* 时间复杂度：$O(|V|+|E|)$
+  
+作用：
+* 可以用拓补排序来检测有向图中是否有环。
+
+例如：
+![拓补排序](pics/屏幕截图%202024-11-11%20151350.png)
+
+src: [图-拓扑排序](https://www.bilibili.com/video/BV1XV411X7T7/?share_source=copy_web&vd_source=06b1f610d231aea4a5a27eaa894aa2d5)
+
+#### 实现
+**关键思想**：使用一个存储所有入度为0的顶点的**队列**。
+* 首先，对每个顶点计算入度。
+* 然后，将所有入度为0的顶点加入初始为空的队列中。
+* 当队列不为空时，从队列中删除一个顶点v，并将邻接v的所有顶点的入度减1。
+* 只要一个顶点的入度降为0，就将其加入队列。此时，拓补排序就是顶点出队的顺序。
+
+这是一种DFS的思想。
+
+伪代码实现：
+```c++
+//topoNum是顶点的拓补编号
+void Graph::topoSort()
+{
+    Queue<Vertex> q;
+    int counter = 0;
+    
+    q.makeEmpty();
+    foreach Vertex v
+    {
+        if (v.indegree == 0)
+            q.enqueue(v);
+    }
+
+    while (!q.isEmpty())
+    {
+        Vertex v = q.dequeue();
+        v.topoNum = ++counter;
+        foreach Vertex w adjacent to v
+        {
+            if (--w.indegree == 0)
+                q.enqueue(w);
+        }
+    }
+
+    //若不是所有的顶点都被处理过，则图中有环
+    if (counter != NUM_VERTICES)
+        throw "Graph has a cycle";
+}
+```
+
+### 9.5 最短路径问题
+问题描述：给定一个图G(V,E)和一个起始顶点s，找到从s到所有其他顶点的最短路径。
+
+变体：
+- 单源->多源
+- 无权->有权
+- 无环->有环
+- 正权->正、负权
+
+#### 解法一：广度优先搜索（BFS）
+适用：无权图；有环/无环。
+
+基本思想：从起始顶点s开始，一层一层往外访问，规定起点是第0层，即第0层的距离为0，第N层的顶点距起点的距离为N。最少边的路径就是最短路径。
+
+性质：
+* 时间复杂度：$O(|V|+|E|)$
+
+伪代码实现：
+```c++
+/*
+ * dist 是 distance
+ * path 是 起始顶点s 到 调用者v 的路径上的前一个顶点 
+ */
+void Graph::unweighted(Vertex s)
+{
+    Queue<Vertex> q;
+
+    for each Vertex v
+    {
+        v.dist = INFINITY;// =Unmarked
+    }
+
+    while (!q.isEmpty())
+    {
+        Vertex v = q.dequeue();
+        foreach Vertex w adjacent to v
+        {
+            if (w.dist == INFINITY)
+            {
+                w.dist = v.dist + 1;
+                w.path = v;
+                q.enqueue(w);
+            }
+        }
+    }
+}
+```
+
+例：
+![BFS](pics/屏幕截图%202024-11-11%20165153.png)
+![How it works](pics/屏幕截图%202024-11-11%20165319.png)
+
+#### 解法二：Dijkstra算法（必考！）
+适用：有权图（正权）；有环/无环。
+
+基本思想：
+1. 将`权重值`看作是`边长`，定义`顶点v的距离`为`从s到v的距离`。将s的距离初始化为0，其他顶点的最短距离初始化为无穷大。
+
+2. 定义S是已经确定了最短路径的顶点的集合，将S初始化为空集。
+
+3. 每次从未标记的节点中选择距出发点最近的顶点v，标记v并将v加入S。
+
+4. 计算刚加入S的顶点v的邻接顶点w的最短距离（不包含标记的顶点），若（
+v的距离+（v,w）的边长）小于w的距离，则更新w的距离。
+
+这是一种贪心算法。
+
+性质：
+* 时间复杂度：$O((n+m)logn)$
+  * n是顶点数，m是边数
+  * 初始化数据结构：$O(n+m)$
+  * 每次选取最小距离的顶点：$O(nlogn)$
+  * 更新距离：$O(mlogn)$
+  * 更新前驱指针：$O(m)$
+
+例：
+
+![Dijkstra](pics/屏幕截图%202024-11-11%20174617.png)
+
+解法：
+
+![Dijkstra解法](pics/屏幕截图%202024-11-11%20174822.png)
+
+
+### 9.6 图的搜索
+图的搜索有两种：深度优先搜索（DFS）和广度优先搜索（BFS）。
