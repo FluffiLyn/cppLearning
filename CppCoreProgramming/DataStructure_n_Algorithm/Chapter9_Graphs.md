@@ -229,3 +229,150 @@ v的距离+（v,w）的边长）小于w的距离，则更新w的距离。
 
 ### 9.6 图的搜索
 图的搜索有两种：深度优先搜索（DFS）和广度优先搜索（BFS）。
+
+#### DFS
+1、基本思想
+- 先从一条路径的起始顶点开始，一直走到不能走为止
+- 然后回溯，走另一条没走过的路径
+
+- 使用栈来实现
+- 允许简单的递归实现
+
+2、伪代码实现：
+
+简单版（无法遍历非连通图）
+```c++
+void Graph::dfs(Vertex v)
+{
+    v.visited = true;// 标记为已访问
+    // 遍历邻接顶点可以按标号从小到大进行
+    foreach Vertex w adjacent to v
+    {
+        if (!w.visited)
+            dfs(w);
+    }
+}
+```
+
+3、复杂度分析
+- 时间复杂度：$O(|V|+|E|)$
+- 空间复杂度：$O(|V|)$
+#### BFS 
+1、简单介绍
+- 使用队列存储顶点
+- 所有在相同特定距离上的顶点都被访问后，才访问下一层的顶点
+
+2、伪代码实现：
+```c++
+void Graph::bfs(Vertex v)
+{
+    Queue<Vertex> q;
+
+    v.visited = true;
+    q.enqueue(v);
+
+    while (!q.isEmpty())
+    {   // 从队列中取出一个顶点
+        Vertex v = q.dequeue();
+        // 遍历所有邻接顶点
+        foreach Vertex w adjacent to v
+        {
+            if (!w.visited)
+            {
+                w.visited = true;
+                q.enqueue(w);
+            }
+        }
+    }
+}
+```
+
+3、复杂度分析
+
+### 9.7 最小生成树（Minimum Spanning Tree）
+众所周知如果一个无向连通图不包含回路，那么它就是一棵树。而**最小生成树**是一个连通加权图的生成树，它的所有边的权值之和最小。
+
+构造最小生成树的策略是：
+- 从一个顶点开始，添加一个最小权值且不会形成回路的边
+- 重复|V|-1次，直到所有顶点都被加入生成树
+
+下面介绍两种最小生成树算法：Prim算法和Kruskal算法。
+#### Prim算法（加点法）
+这是一种贪心算法。
+
+1、基本思想：
+- 选择一个顶点v作为起始顶点，将其加入生成树。
+- 然后选择一个顶点u，使得(u,v)是E中**权值最小**的边，将u加入V，(u,v)加入E'。
+- 重复上述步骤，直到所有顶点都被加入生成树。
+
+2、伪代码实现：
+```c++
+void Graph::prim(Vertex v)
+{
+    v.marked = true;
+    v.cost = 0;
+    v.path = null;
+
+    while (not all vertices are marked)
+    {
+        Vertex v = unmarked node u with minimum cost;
+        v.marked = true;
+        foreach unmarked Vertex w adjacent to v
+        {
+           if (cost(v,w) < w.cost)
+            {
+                w.cost = cost(v,w);
+                w.path = v;// 或者理解为w.prev = v
+            }
+        }
+    }
+}
+```
+
+3、复杂度分析
+- 时间复杂度：$O((n+m)logn)$
+  - m=|E|, n=|V|
+
+4、适用范围：稠密图
+
+#### Kruskal算法（加边法）
+这是一种贪心算法。
+
+1、基本思想：
+- 将所有边按照权值从小到大排序
+- 从权值最小的边开始，如果这个边不会形成回路，就将这个边加入生成树
+- 重复上述步骤，直到所有顶点都被加入生成树
+
+2、伪代码实现：
+```c++
+void Graph::kruskal()
+{
+    // 初始化森林，每棵树都是一个单独的节点
+    Forest F = new Forest(V);
+
+    // 将所有边按照权值排序
+    PriorityQueue<Edge> Q;
+    foreach Edge e in graph
+    {
+        Q.insert(e)
+    }
+
+    while(F.size() < |V| - 1)
+    {
+        // 删除最小边并获取
+        Edge e = Q.deleteMin();
+
+        // 如果形成环则丢弃
+        if (e.u == e.v) continue;
+
+        // 否则接受该边并进行并集操作
+        F.union(e.u, e.v);
+    }
+}
+```
+
+3、复杂度分析
+- 时间复杂度：$O(mlogm)=O(mlogn)$
+  - m=|E|, n=|V|
+
+4、适用范围：稀疏图
