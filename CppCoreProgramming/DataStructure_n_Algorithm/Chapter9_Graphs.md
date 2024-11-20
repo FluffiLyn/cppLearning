@@ -302,7 +302,7 @@ void Graph::bfs(Vertex v)
 
 1、基本思想：
 - 选择一个顶点v作为起始顶点，将其加入生成树。
-- 然后选择一个顶点u，使得(u,v)是E中**权值最小**的边，将u加入V，(u,v)加入E'。
+- 然后选择一个距离任何已标记的顶点**最近（边权值最小）**的顶点u，将u加入生成树。
 - 重复上述步骤，直到所有顶点都被加入生成树。
 
 2、伪代码实现：
@@ -322,7 +322,7 @@ void Graph::prim(Vertex v)
            if (cost(v,w) < w.cost)
             {
                 w.cost = cost(v,w);
-                w.path = v;// 或者理解为w.prev = v
+                w.path = v;// 或者理解为w.prev = v，连接w和v
             }
         }
     }
