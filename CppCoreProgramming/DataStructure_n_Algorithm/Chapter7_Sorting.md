@@ -279,6 +279,7 @@ void merge(vector<int>& a, vector<int>& tmpArray, int leftPos, int rightPos, int
     }
 
     //将剩余元素拷贝到tmpArray中
+    //后缀自增相当于当前表达式执行完后再自增
     while (leftPos <= leftEnd)
     {
         tmpArray[tmpPos++] = a[leftPos++];
@@ -370,11 +371,11 @@ void quickSort(vector<int>& a, int left, int right)
     if (left + 10 <= right)
     {
         //分割
-
         int pivot = median3(a, left, right);
         int i = left, j = right - 1;
         for (;;)
         {
+            //前缀自增使得i、j先增加再执行表达式
             while (a[++i] < pivot) {}
             while (a[--j] > pivot) {}
             
