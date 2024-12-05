@@ -43,7 +43,7 @@ struct TreeNode
 
 ##### 前序遍历 （preorder tree walk）
 * 先访问根节点，然后访问左子树，最后是右子树
-![前序遍历](https://www.runoob.com/wp-content/uploads/2020/09/traverse-02.png)
+![前序遍历](https://www.runoob.com/wp-content/uploads/2020/09/traverse-01.png)
 
 ```c++
 void preOrder(TreeNode *node) 
@@ -64,7 +64,7 @@ void preOrder(TreeNode *node)
 
 #### 中序遍历（inorder tree walk）
 * 先递归访问左子树，再访问自身，最后递归访问右子树
-![中序遍历](https://www.runoob.com/wp-content/uploads/2020/09/traverse-01.png)
+![中序遍历](https://www.runoob.com/wp-content/uploads/2020/09/traverse-02.png)
 
 ```c++
 void inOrder(TreeNode *node) 
