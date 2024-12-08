@@ -17,8 +17,9 @@
 
 * **路径(path)**：从节点$n_1$到$n_k$的路径是节点$n_1,n_2,...,n_k$的序列。
 * **边长（length）**：该路径上的边的条数。
-* **深度（depth）**：从**根**到$n_i$的**唯一路径**的边长。根的深度为0.
-* **高度（height）**：从$n_i$到一片树叶的最长路径的长。树叶的高度为0.
+* **深度（depth）**：从**根**到$n_i$的**唯一路径**的边长。根的深度为0。
+* **高度（height）**：从$n_i$到一片树叶的最长路径的长。树叶的高度为0。
+* **度（degree）**：节点的**子节点数**。（与图论中的度不同）
 
 * 如果存在$n_1$到$n_2$的一条路径，那么$n_1$是$n_2$的**祖先**（ancestor），而后者是前者的**后裔（descendant）**。如果$n_1 \neq n_2$，那么是真祖先、真后裔（proper ancestor/proper descendant）。
 
@@ -536,7 +537,7 @@ Zig-Zag是两次不同方向的旋转。分为Zig-ZagFromLeft和Zig-ZagFromRight
 
 
 假设R是访问的非根节点，那么之子形的情形是：有父节点Q和祖父节点P，且P->left = Q, Q->right = R，此时执行Zig-ZagFromLeft操作。
-![之字形](pics/屏幕截图%202024-10-22%20094400.png)
+![之字形](pics/屏幕截图%202024-10-22%20095624.png)
 
 #### 之形（Zig-Zig）
 Zig-Zig是两次相同方向的旋转。分为Zig-ZigFromLeft和Zig-ZigFromRight。
