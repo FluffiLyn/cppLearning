@@ -148,7 +148,8 @@ void shellSort(int* a, int n)
     }
 }
 ```
-图示：![希尔排序](https://pica.zhimg.com/80/v2-7ef755d2b04f11cb013acb47f10928cc_720w.webp)
+图示：
+![希尔排序](https://pica.zhimg.com/80/v2-7ef755d2b04f11cb013acb47f10928cc_720w.webp)
 
 ### 7.6 堆排序（Heap Sort）
 我们使用最大堆来进行升序排序，使用最小堆来进行降序排序。
@@ -228,7 +229,7 @@ void heapSort(vector<int>& a)
 步骤：
 1. 将n个元素分成个含n/2个元素的子序列。
 2. 用归并排序对两个子序列递归地排序。
-3. 将子表两两合并，重复这一步骤直到最后只剩下一个子表，这个子表就是排好序的线性表。
+3. 将子序列两两合并，重复这一步骤直到最后只剩下一个子序列，这个子序列就是排好序的序列。
 
 性质：
 * 时间复杂度：$O(N \log N)$
@@ -542,10 +543,10 @@ void radixSort(vector<int>& a)
 |冒泡排序| $O(n^2)$ | $O(n)$ | $O(n^2)$ | $O(1)$ | In-place | 稳定 |
 |插入排序| $O(n^2)$ | $O(n)$ | $O(n^2)$ | $O(1)$ | In-place | 稳定 |
 |选择排序| $O(n^2)$ | $O(n^2)$ | $O(n^2)$ | $O(1)$ | In-place | 不稳定 |
-|希尔排序| $O(n^1.3)$ | $O(n)$ | $O(n^2)$ | $O(1)$ | In-place | 不稳定 |
+|希尔排序| $O(n^{1.3})$ | $O(n)$ | $O(n^2)$ | $O(1)$ | In-place | 不稳定 |
 |堆排序| $O(n\log n)$ | $O(n\log n)$ | $O(n\log n)$ | $O(1)$ | In-place | 不稳定 |
 |归并排序| $O(n\log n)$ | $O(n\log n)$ | $O(n\log n)$ | $O(n)$ | Out-place | 稳定 |
-|快速排序| $O(n\log n)$ | $O(n\log n)$ | $O(n^2)$ | $O(\log n)$ | In-place | 不稳定 |
+|快速排序| $O(n\log n)$ | $O(n\log n)$ | $O(n^2)$ | 最好 $O(\log n)$ 最坏 $O(n)$ | In-place | 不稳定 |
 |桶排序| $O(n+k)$ | $O(n+k)$ | $O(n^2)$ | $O(n+k)$ | Out-place | 稳定 |
 |基数排序| $O(k(n+b))$ | $O(k(n+b))$ | $O(k(n+b))$ | $O(n+b)$ | Out-place | 稳定 |
 |计数排序| $O(n+k)$ | $O(n+k)$ | $O(n+k)$ | $O(k)$ | Out-place | 稳定 |
